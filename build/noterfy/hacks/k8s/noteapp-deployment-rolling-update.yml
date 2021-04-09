@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: noteapp
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: noteapp
+  minReadySeconds: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: noteapp
+    spec:
+      containers:
+        - name: noteapp-pod
+          image: jayvib/noteapp:0.1.0 # update the tag for the rolling update
+          ports:
+            - containerPort: 50001

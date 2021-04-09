@@ -1,0 +1,21 @@
+syntax = "proto3";
+package proto;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = ".;proto";
+
+message note {
+  // id is a unique identifier of the note in UUID bytes.
+  bytes id = 1;
+  // title is the title of the note.
+  string title = 2;
+  // content is the content of the note.
+  string content = 3;
+  // created_time is the timestamp when the note was created.
+  google.protobuf.Timestamp created_time = 4;
+  // update_time is the timestamp when the note last updated.
+  google.protobuf.Timestamp updated_time = 5;
+  // is_favorite is a flag when then note marked as favorite.
+  bool is_favorite = 6;
+}

@@ -1,0 +1,32 @@
+#
+# During rolling update run the command:
+# kubectl rollout status deployment noteapp
+#
+# Rollback:
+# kubectl rollout undo deployment noteapp --to-revision=1
+#
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: noteapp
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: noteapp
+  minReadySeconds: 10 # Tells kubernetes to wait for 10 secconds between each Pod being updated.
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1 # Never have more than one Pod below desired state
+      maxSurge: 1 # Never have more than one Pod above desired state
+  template:
+    metadata:
+      labels:
+        app: noteapp
+    spec:
+      containers:
+        - name: noteapp-pod
+          image: jayvib/noteapp:latest
+          ports:
+            - containerPort: 50001
