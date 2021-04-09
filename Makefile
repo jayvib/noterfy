@@ -57,7 +57,7 @@ stop-dev-services:
 
 
 define BUILD_HELP_INFO
-# Build run the build step process of Noteapp Docker image.
+# Build run the build step process of Noterfy Docker image.
 #
 # Example:
 # 	make build
@@ -74,13 +74,13 @@ endef
 .PHONY: build-noterfy
 build-noterfy: # Use to build the executable file of the noterfy. The executable will store in ./bin/ directory
 ifdef NOTERFY_VERSION
-	@echo "🛠 Building Noteapp version: ${NOTERFY_VERSION}"
+	@echo "🛠 Building Noterfy version: ${NOTERFY_VERSION}"
 endif
 ifeq ($(wildcard ./bin/.*),)
 	@echo " ---> Creating bin directory"
 	@mkdir ./bin
 endif
-	@echo " ---> Building Noteapp"
+	@echo " ---> Building Noterfy"
 	@CGO_ENABLED=0 go build \
 		-a \
 		-tags netgo \
@@ -98,7 +98,7 @@ define DOCKER_BUILD_NOTERFY_HELP_INFO
 endef
 .PHONY: docker-build-noterfy
 docker-build-noterfy:
-	@echo "🛠 Building Noteapp Docker Image"
+	@echo "🛠 Building Noterfy Docker Image"
 	docker build -t ${APP_NAME} -f ./build/noterfy/docker/Dockerfile .
 	docker tag ${APP_NAME} jayvib/${APP_NAME}:latest
 	docker tag ${APP_NAME} jayvib/${APP_NAME}:${NOTERFY_VERSION}
@@ -197,6 +197,3 @@ endef
 clean:
 	@echo "🧹️ Cleaning up resources"
 	@docker images -q --filter "dangling=true" | xargs docker rmi || true
-
-test-git:
-	@echo "Git Commit: $(shell git rev-parse HEAD)"
