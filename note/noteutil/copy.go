@@ -2,7 +2,7 @@ package noteutil
 
 import (
 	"github.com/jinzhu/copier"
-	"noteapp/note"
+	"noterfy/note"
 )
 
 // Copy takes a note and then returns a deeply copied note with

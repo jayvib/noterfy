@@ -4,7 +4,7 @@ import (
 	httptransport "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
 	"net/http"
-	"noteapp/note"
+	"noterfy/note"
 )
 
 // makeHandler initializes all the routes for the note service

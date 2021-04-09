@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"github.com/go-kit/kit/endpoint"
 	"net/http"
-	"noteapp/note"
+	"noterfy/note"
 )
 
 type updateService interface {

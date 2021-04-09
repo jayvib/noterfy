@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"noteapp/note"
-	"noteapp/note/proto/protoutil"
+	"noterfy/note"
+	"noterfy/note/proto/protoutil"
 	"os"
 )
 
@@ -27,7 +27,7 @@ var ReadProtoFromFile = &cobra.Command{
 This will read all the notes that are stored in the file then
 print to the terminal.
 `,
-	Example: "noteapp_cli note utils read-proto-file --filename ./note.pb",
+	Example: "noterfy_cli note utils read-proto-file --filename ./note.pb",
 	Run: func(cmd *cobra.Command, args []string) {
 		file, err := os.Open(fileName)
 		if err != nil {

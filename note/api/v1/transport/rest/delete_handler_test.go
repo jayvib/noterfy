@@ -5,8 +5,8 @@ import (
 	"github.com/google/uuid"
 	"net/http"
 	"net/http/httptest"
-	"noteapp/note"
-	"noteapp/note/noteutil"
+	"noterfy/note"
+	"noterfy/note/noteutil"
 )
 
 func (s *HandlerTestSuite) TestDelete() {

@@ -5,14 +5,14 @@ kind: Pod
 # metadata helps identify the object in the cluster.
 metadata:
   # name is the name of the pod
-  name: noteapp-pod
+  name: noterfy-pod
   # labels are the labels that will be attach to the pod
   labels:
     zone: development
     version: v0
 spec:
   containers:
-    - name: noteapp-ctr
-      image: jayvib/noteapp:latest
+    - name: noterfy-ctr
+      image: jayvib/noterfy:latest
       ports:
         - containerPort: 50001

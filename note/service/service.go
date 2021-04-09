@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
-	"noteapp/note"
-	"noteapp/note/noteutil"
-	"noteapp/pkg/timestamp"
+	"noterfy/note"
+	"noterfy/note/noteutil"
+	"noterfy/pkg/timestamp"
 )
 
 var _ note.Service = (*Service)(nil)

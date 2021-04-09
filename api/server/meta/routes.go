@@ -6,8 +6,8 @@ import (
 	"github.com/go-kit/kit/endpoint"
 	httptransport "github.com/go-kit/kit/transport/http"
 	"net/http"
-	"noteapp/api"
-	nhttp "noteapp/pkg/http"
+	"noterfy/api"
+	nhttp "noterfy/pkg/http"
 	"time"
 )
 

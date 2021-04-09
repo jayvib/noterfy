@@ -4,7 +4,7 @@ package mocks
 
 import (
 	context "context"
-	note "noteapp/note"
+	note "noterfy/note"
 
 	mock "github.com/stretchr/testify/mock"
 
@@ -51,6 +51,29 @@ func (_m *Service) Delete(ctx context.Context, id uuid.UUID) error {
 	}
 
 	return r0
+}
+
+// Fetch provides a mock function with given fields: ctx, pagination
+func (_m *Service) Fetch(ctx context.Context, pagination *note.Pagination) (note.Iterator, error) {
+	ret := _m.Called(ctx, pagination)
+
+	var r0 note.Iterator
+	if rf, ok := ret.Get(0).(func(context.Context, *note.Pagination) note.Iterator); ok {
+		r0 = rf(ctx, pagination)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(note.Iterator)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, *note.Pagination) error); ok {
+		r1 = rf(ctx, pagination)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // Get provides a mock function with given fields: ctx, id

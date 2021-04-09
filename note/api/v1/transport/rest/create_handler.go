@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"github.com/go-kit/kit/endpoint"
 	"net/http"
-	"noteapp/note"
+	"noterfy/note"
 )
 
 // createService is here to follow the interface segregation principle.

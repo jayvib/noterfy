@@ -41,7 +41,7 @@ func (t *TestSuite) TestConfig() {
 	}{
 		{
 			name:     "Get config in the current directory",
-			filePath: "/etc/noteapp",
+			filePath: "/etc/noterfy",
 			input: `
 store:
   file:
@@ -61,7 +61,7 @@ server:
 		},
 		{
 			name:     "Get config with defaults",
-			filePath: "/etc/noteapp",
+			filePath: "/etc/noterfy",
 			input:    ``,
 			want: &Config{
 				Server: Server{

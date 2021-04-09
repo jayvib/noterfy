@@ -7,8 +7,8 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"io"
-	"noteapp/note"
-	pb "noteapp/note/proto"
+	"noterfy/note"
+	pb "noterfy/note/proto"
 )
 
 var errUnexpected = errors.New("unexpected write count")

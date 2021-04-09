@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"github.com/sirupsen/logrus"
 	"net/http"
-	"noteapp/note"
-	"noteapp/pkg/util/errorutil"
+	"noterfy/note"
+	"noterfy/pkg/util/errorutil"
 )
 
 // StatusClientClosed is an http status where the client cancels a request.

@@ -5,9 +5,9 @@ import (
 	"github.com/google/uuid"
 	"net/http"
 	"net/http/httptest"
-	"noteapp/note"
-	"noteapp/note/noteutil"
-	"noteapp/pkg/timestamp"
+	"noterfy/note"
+	"noterfy/note/noteutil"
+	"noterfy/pkg/timestamp"
 )
 
 func (s *HandlerTestSuite) TestGet() {

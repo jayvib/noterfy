@@ -15,7 +15,7 @@ var (
 // config file with a filename of "config.yaml".
 //
 // Config file will be search in the following path in order:
-// - "/etc/noteapp"
+// - "/etc/noterfy"
 // - "/run/secrets"
 // - "."
 func New() *Config {
@@ -36,7 +36,7 @@ func newConfig(fs afero.Fs) (*Config, error) {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 
-	viper.AddConfigPath("/etc/noteapp")
+	viper.AddConfigPath("/etc/noterfy")
 	// For Docker Compose default path for mounting the secret.
 	// see. https://docs.docker.com/compose/compose-file/compose-file-v3/#secrets
 	viper.AddConfigPath("/run/secrets")

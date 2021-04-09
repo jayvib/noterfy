@@ -1,24 +1,24 @@
 version: "3.5"
 
 services:
-  noteapp-engine:
-    image: jayvib/noteapp:latest
+  noterfy-engine:
+    image: jayvib/noterfy:latest
     ports:
       - "50001:50001"
       - "443:443"
     networks:
-      - noteapp-backend
+      - noterfy-backend
     volumes:
       - type: bind
         source: ./config.yaml
-        target: /etc/noteapp/config.yaml
+        target: /etc/noterfy/config.yaml
       - type: volume
-        source: noteapp-volume
-        target: /etc/noteapp/data
+        source: noterfy-volume
+        target: /etc/noterfy/data
 
 networks:
-  noteapp-backend:
+  noterfy-backend:
 
 volumes:
-  noteapp-volume:
+  noterfy-volume:
 

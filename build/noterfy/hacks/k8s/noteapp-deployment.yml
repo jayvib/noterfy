@@ -1,19 +1,19 @@
 #
 # During rolling update run the command:
-# kubectl rollout status deployment noteapp
+# kubectl rollout status deployment noterfy
 #
 # Rollback:
-# kubectl rollout undo deployment noteapp --to-revision=1
+# kubectl rollout undo deployment noterfy --to-revision=1
 #
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: noteapp
+  name: noterfy
 spec:
   replicas: 5
   selector:
     matchLabels:
-      app: noteapp
+      app: noterfy
   minReadySeconds: 10 # Tells kubernetes to wait for 10 secconds between each Pod being updated.
   strategy:
     type: RollingUpdate
@@ -23,10 +23,10 @@ spec:
   template:
     metadata:
       labels:
-        app: noteapp
+        app: noterfy
     spec:
       containers:
-        - name: noteapp-pod
-          image: jayvib/noteapp:latest
+        - name: noterfy-pod
+          image: jayvib/noterfy:latest
           ports:
             - containerPort: 50001

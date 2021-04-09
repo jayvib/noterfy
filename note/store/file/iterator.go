@@ -2,8 +2,8 @@ package file
 
 import (
 	"github.com/sirupsen/logrus"
-	"noteapp/note"
-	"noteapp/note/noteutil"
+	"noterfy/note"
+	"noterfy/note/noteutil"
 )
 
 type iterator struct {

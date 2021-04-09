@@ -1,16 +1,16 @@
 version: "3.5"
 
 services:
-  noteapp-engine:
-    image: "jayvib/noteapp:latest"
-    container_name: noteapp-engine
+  noterfy-engine:
+    image: "jayvib/noterfy:latest"
+    container_name: noterfy-engine
     ports:
       - target: 50001
         published: 50001
     volumes:
       - type: volume
-        source: noteapp-vol
+        source: noterfy-vol
         target: /etc/data/
 
 volumes:
-  noteapp-vol:
+  noterfy-vol:

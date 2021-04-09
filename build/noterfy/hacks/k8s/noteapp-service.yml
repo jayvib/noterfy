@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: noteapp-svc
+  name: noterfy-svc
   labels:
-    app: noteapp
+    app: noterfy
 spec:
   type: NodePort
   ports:
@@ -11,4 +11,4 @@ spec:
       nodePort: 30001 # the port that will bind to host
       protocol: TCP
   selector:
-    app: noteapp
+    app: noterfy

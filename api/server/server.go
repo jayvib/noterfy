@@ -5,14 +5,14 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 	"net/http"
-	"noteapp/api"
+	"noterfy/api"
 	"os"
 	"text/tabwriter"
 )
 
 // TODO: Add a helth check endoint
 
-// New takes config for all the arguments that the server needs and
+// New takes config for all the arguments tat the server needs and
 // return a server instance.
 func New(conf *Config) *Server {
 	server := &Server{

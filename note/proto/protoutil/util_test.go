@@ -8,8 +8,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 	"io"
-	"noteapp/note"
-	pb "noteapp/note/proto"
+	"noterfy/note"
+	pb "noterfy/note/proto"
 	"testing"
 )
 

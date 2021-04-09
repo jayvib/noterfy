@@ -4,7 +4,7 @@ package mocks
 
 import (
 	context "context"
-	note "noteapp/note"
+	note "noterfy/note"
 
 	mock "github.com/stretchr/testify/mock"
 

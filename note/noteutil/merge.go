@@ -2,7 +2,7 @@ package noteutil
 
 import (
 	"github.com/jinzhu/copier"
-	"noteapp/note"
+	"noterfy/note"
 )
 
 // Merge merges note from fromNote to toNote. This will

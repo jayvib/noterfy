@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/go-kit/kit/endpoint"
 	"net/http"
-	"noteapp/note"
+	"noterfy/note"
 	"strconv"
 )
 

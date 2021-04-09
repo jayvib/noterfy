@@ -3,7 +3,7 @@ package middleware
 import (
 	"github.com/gorilla/handlers"
 	"net/http"
-	"noteapp/api"
+	"noterfy/api"
 	"os"
 )
 

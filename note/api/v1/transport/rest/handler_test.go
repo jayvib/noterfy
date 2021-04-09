@@ -7,10 +7,10 @@ import (
 	"github.com/stretchr/testify/suite"
 	"net/http"
 	"net/http/httptest"
-	"noteapp/note"
-	"noteapp/note/service"
-	"noteapp/note/store/memory"
-	"noteapp/pkg/ptrconv"
+	"noterfy/note"
+	"noterfy/note/service"
+	"noterfy/note/store/memory"
+	"noterfy/pkg/ptrconv"
 	"testing"
 )
 

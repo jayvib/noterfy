@@ -1,12 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: noteapp
+  name: noterfy
 spec:
   replicas: 5
   selector:
     matchLabels:
-      app: noteapp
+      app: noterfy
   minReadySeconds: 10
   strategy:
     type: RollingUpdate
@@ -16,10 +16,10 @@ spec:
   template:
     metadata:
       labels:
-        app: noteapp
+        app: noterfy
     spec:
       containers:
-        - name: noteapp-pod
-          image: jayvib/noteapp:0.1.0 # update the tag for the rolling update
+        - name: noterfy-pod
+          image: jayvib/noterfy:0.1.0 # update the tag for the rolling update
           ports:
             - containerPort: 50001

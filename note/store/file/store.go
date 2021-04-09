@@ -5,9 +5,9 @@ import (
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"io"
-	"noteapp/note"
-	"noteapp/note/noteutil"
-	"noteapp/note/proto/protoutil"
+	"noterfy/note"
+	"noterfy/note/noteutil"
+	"noterfy/note/proto/protoutil"
 	"sort"
 	"sync"
 )

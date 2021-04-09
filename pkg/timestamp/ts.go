@@ -1,7 +1,7 @@
 package timestamp
 
 import (
-	"noteapp/pkg/ptrconv"
+	"noterfy/pkg/ptrconv"
 	"time"
 )
 

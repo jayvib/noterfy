@@ -4,8 +4,8 @@ import (
 	"context"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
-	"noteapp/note"
-	"noteapp/note/noteutil"
+	"noterfy/note"
+	"noterfy/note/noteutil"
 	"sort"
 	"sync"
 )

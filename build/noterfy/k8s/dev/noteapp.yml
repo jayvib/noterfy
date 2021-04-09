@@ -6,7 +6,7 @@ metadata:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: noteapp-pv-local
+  name: noterfy-pv-local
   namespace: dev
 spec:
   storageClassName: manual
@@ -15,12 +15,12 @@ spec:
   accessModes:
     - ReadWriteMany
   hostPath:
-    path: "/etc/noteapp"
+    path: "/etc/noterfy"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: noteapp-pv-local-claim
+  name: noterfy-pv-local-claim
   namespace: dev
 spec:
   storageClassName: manual
@@ -33,13 +33,13 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: noteapp
+  name: noterfy
   namespace: dev
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: noteapp
+      app: noterfy
   minReadySeconds: 10
   strategy:
     type: RollingUpdate
@@ -49,45 +49,45 @@ spec:
   template:
     metadata:
       labels:
-        app: noteapp
+        app: noterfy
     spec:
       volumes:
         - name: volconf
           configMap:
-            name: noteapp-config
-        - name: noteapp-pv-local
+            name: noterfy-config
+        - name: noterfy-pv-local
           persistentVolumeClaim:
-            claimName: noteapp-pv-local-claim
+            claimName: noterfy-pv-local-claim
       containers:
-        - name: noteapp-pod
-          image: jayvib/noteapp:0.2.1
+        - name: noterfy-pod
+          image: jayvib/noterfy:0.2.1
           ports:
             - containerPort: 50001
           volumeMounts:
-            - mountPath: /etc/noteapp
+            - mountPath: /etc/noterfy
               name: volconf
-            - mountPath: /etc/noteapp/data
-              name: noteapp-pv-local
+            - mountPath: /etc/noterfy/data
+              name: noterfy-pv-local
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: noteapp-config
+  name: noterfy-config
   namespace: dev
 data:
   config.yaml: |
     store:
       file:
-        path: /etc/noteapp/data
+        path: /etc/noterfy/data
     server:
       port: 50001
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: noteapp-svc
+  name: noterfy-svc
   labels:
-    app: noteapp
+    app: noterfy
   namespace: dev
 spec:
   type: NodePort
@@ -96,4 +96,4 @@ spec:
       nodePort: 30001 # the port that will bind to host
       protocol: TCP
   selector:
-    app: noteapp
+    app: noterfy

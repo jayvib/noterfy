@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: noteapp-config
+  name: noterfy-config
 data:
   config.yaml: |
     store:

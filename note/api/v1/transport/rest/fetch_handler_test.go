@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"noteapp/note"
+	"noterfy/note"
 )
 
 func (s *HandlerTestSuite) TestFetch() {

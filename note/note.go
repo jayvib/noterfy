@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
-	"noteapp/pkg/ptrconv"
+	"noterfy/pkg/ptrconv"
 	"text/tabwriter"
 	"time"
 )

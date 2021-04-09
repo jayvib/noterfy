@@ -3,9 +3,9 @@ package rest
 import (
 	httptransport "github.com/go-kit/kit/transport/http"
 	"net/http"
-	"noteapp/api"
-	"noteapp/note"
-	nhttp "noteapp/pkg/http"
+	"noterfy/api"
+	"noterfy/note"
+	nhttp "noterfy/pkg/http"
 )
 
 // Routes returns all the routes that is part of the

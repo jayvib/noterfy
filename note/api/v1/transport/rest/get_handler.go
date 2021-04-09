@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"net/http"
-	"noteapp/note"
+	"noterfy/note"
 )
 
 type getService interface {

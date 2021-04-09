@@ -2,8 +2,8 @@ package memory
 
 import (
 	"github.com/sirupsen/logrus"
-	"noteapp/note"
-	"noteapp/note/noteutil"
+	"noterfy/note"
+	"noterfy/note/noteutil"
 )
 
 var _ note.Iterator = (*iterator)(nil)

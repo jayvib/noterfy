@@ -3,26 +3,26 @@ version: "3.5"
 # ⚠⚠⚠ This compose file is use for development purpose only.
 
 services:
-  noteapp-engine:
-    image: noteapp:dev
+  noterfy-engine:
+    image: noterfy:dev
     build:
       context: ../../../../
-      dockerfile: build/noteapp/docker/Dockerfile
+      dockerfile: build/noterfy/docker/Dockerfile
       labels:
-        com.noteapp.description: "The applications backend engine"
-        com.noteapp.stage: "Development"
+        com.noterfy.description: "The applications backend engine"
+        com.noterfy.stage: "Development"
     ports:
       - "50001:50001"
     networks:
-      - noteapp-backend
+      - noterfy-backend
     volumes:
       - type: volume
-        source: noteapp-volume
-        target: /etc/noteapp/data
+        source: noterfy-volume
+        target: /etc/noterfy/data
     secrets:
       - config.yaml
     env_file:
-      - ./noteapp.env
+      - ./noterfy.env
     healthcheck:
       disable: true # Need to be implemented
 #      test: ["CMD", "curl", "-f", "http://localhost:50001/health"]
@@ -32,13 +32,13 @@ services:
 #      start_period: 40s
 
 networks:
-  noteapp-backend:
+  noterfy-backend:
 
 volumes:
-  noteapp-volume:
+  noterfy-volume:
 
 secrets:  # Use for stack. But for development will just use the volume bind
   config.yaml:
     file: ./config.yaml
-    name: noteapp-secret
+    name: noterfy-secret
 

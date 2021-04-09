@@ -1,6 +1,6 @@
 package note
 
-import "noteapp/pkg/iterator"
+import "noterfy/pkg/iterator"
 
 // Iterator is implemented by objects that can paginate results.
 type Iterator interface {

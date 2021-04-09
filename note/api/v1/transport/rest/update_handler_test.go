@@ -8,10 +8,10 @@ import (
 	"github.com/sirupsen/logrus"
 	"net/http"
 	"net/http/httptest"
-	"noteapp/note"
-	"noteapp/note/noteutil"
-	"noteapp/pkg/ptrconv"
-	"noteapp/pkg/timestamp"
+	"noterfy/note"
+	"noterfy/note/noteutil"
+	"noterfy/pkg/ptrconv"
+	"noterfy/pkg/timestamp"
 )
 
 func (s *HandlerTestSuite) TestUpdate() {
