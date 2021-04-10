@@ -118,13 +118,11 @@ endif
 	@echo "🛠 Building Noterfy Docker Image"
 	docker build \
 		-t ${APP_NAME} \
-		-t ${APP_NAME} jayvib/${APP_NAME}:latest \
-		-t ${APP_NAME} jayvib/${APP_NAME}:${NOTERFY_VERSION} \
 		--build-arg NOTERFY_BUILD_COMMIT=${GIT_COMMIT} \
 		-f ./build/noterfy/docker/Dockerfile \
 		.
-#	docker tag ${APP_NAME} jayvib/${APP_NAME}:latest
-#	docker tag ${APP_NAME} jayvib/${APP_NAME}:${NOTERFY_VERSION}
+	docker tag ${APP_NAME} jayvib/${APP_NAME}:latest
+	docker tag ${APP_NAME} jayvib/${APP_NAME}:${NOTERFY_VERSION}
 
 define FMT_HELP_INFO
 # Use to format the Go source code.
