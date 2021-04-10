@@ -34,7 +34,7 @@ var doc = `{
     "paths": {
         "/purchase-order": {
             "post": {
-                "description": "Create a new note.",
+                "description": "Creating a new note. The client can assign the note ID with a UUID value but the service will return a conflict error when the note with the ID provided is already exists.",
                 "consumes": [
                     "application/json"
                 ],
@@ -58,6 +58,18 @@ var doc = `{
                         "description": "Successfully created a new note",
                         "schema": {
                             "$ref": "#/definitions/rest.CreateResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict error due to the new note with an ID already exists in the service",
+                        "schema": {
+                            "$ref": "#/definitions/rest.ResponseError"
+                        }
+                    },
+                    "499": {
+                        "description": "Cancel error when the request was aborted",
+                        "schema": {
+                            "$ref": "#/definitions/rest.ResponseError"
                         }
                     }
                 }
@@ -107,6 +119,14 @@ var doc = `{
             "properties": {
                 "note": {
                     "$ref": "#/definitions/note.Note"
+                }
+            }
+        },
+        "rest.ResponseError": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
                 }
             }
         }

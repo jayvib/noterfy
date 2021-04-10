@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"github.com/go-kit/kit/endpoint"
 	httptransport "github.com/go-kit/kit/transport/http"
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"net/http"
 	"noterfy/note"
@@ -95,11 +96,13 @@ func decodeCreateRequest(_ context.Context, r *http.Request) (response interface
 
 // CreateRequest godoc
 // @Summary Create a new note.
-// @Description Create a new note.
+// @Description Creating a new note. The client can assign the note ID with a UUID value but the service will return a conflict error when the note with the ID provided is already exists.
 // @Accept json
 // @Produce json
 // @Param CreateRequest body CreateRequest true "A body containing the new note"
 // @Success 200 {object} CreateResponse "Successfully created a new note"
+// @Failure 409 {object} ResponseError "Conflict error due to the new note with an ID already exists in the service"
+// @Failure 499 {object} ResponseError "Cancel error when the request was aborted"
 // @Router /purchase-order [post]
 func makeCreateEndpoint(svc createService) endpoint.Endpoint {
 	return func(ctx context.Context, req interface{}) (interface{}, error) {
@@ -113,5 +116,34 @@ func makeCreateEndpoint(svc createService) endpoint.Endpoint {
 			}, nil
 		}
 		return CreateResponse{Note: newNote}, nil
+	}
+}
+
+type DeleteRequest struct {
+	ID uuid.UUID `json:"id"`
+}
+
+type DeleteResponse struct {
+	Message string `json:"message"`
+}
+
+func decodeDeleteRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+	return DeleteRequest{ID: uuid.MustParse(id)}, nil
+}
+
+func makeDeleteEndpoint(svc deleteService) endpoint.Endpoint {
+	return func(ctx context.Context, req interface{}) (interface{}, error) {
+		request := req.(DeleteRequest)
+		err := svc.Delete(ctx, request.ID)
+		if err != nil {
+			return errorWrapper{
+				origErr:    err,
+				message:    getMessage(err),
+				statusCode: getStatusCode(err),
+			}, nil
+		}
+		return DeleteResponse{"Successfully Deleted"}, nil
 	}
 }
