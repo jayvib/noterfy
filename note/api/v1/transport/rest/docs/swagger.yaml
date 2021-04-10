@@ -31,10 +31,36 @@ definitions:
       note:
         $ref: '#/definitions/note.Note'
     type: object
+  rest.FetchResponse:
+    properties:
+      notes:
+        items:
+          $ref: '#/definitions/note.Note'
+        type: array
+      total_count:
+        type: integer
+      total_page:
+        type: integer
+    type: object
+  rest.GetResponse:
+    properties:
+      note:
+        $ref: '#/definitions/note.Note'
+    type: object
   rest.ResponseError:
     properties:
       message:
         type: string
+    type: object
+  rest.UpdateRequest:
+    properties:
+      note:
+        $ref: '#/definitions/note.Note'
+    type: object
+  rest.UpdateResponse:
+    properties:
+      note:
+        $ref: '#/definitions/note.Note'
     type: object
 host: localhost:8080
 info:
@@ -80,9 +106,37 @@ paths:
           schema:
             $ref: '#/definitions/rest.ResponseError'
       summary: Create a new note.
+    put:
+      consumes:
+      - application/json
+      description: Updating an existing note. If the note to be updated is not found
+        the API will respond a NotFound status.
+      parameters:
+      - description: A body containing the updated note
+        in: body
+        name: UpdateRequest
+        required: true
+        schema:
+          $ref: '#/definitions/rest.UpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully updated the note
+          schema:
+            $ref: '#/definitions/rest.UpdateResponse'
+        "404":
+          description: Note to be update is not found in the service
+          schema:
+            $ref: '#/definitions/rest.ResponseError'
+        "499":
+          description: Cancel error when the request was aborted
+          schema:
+            $ref: '#/definitions/rest.ResponseError'
+      summary: Update a new note.
   /note/{id}:
     delete:
-      description: Deletes an existing note.
+      description: Delete an existing note.
       parameters:
       - description: ID of the note
         in: path
@@ -102,5 +156,80 @@ paths:
           description: Cancel error when the request was aborted
           schema:
             $ref: '#/definitions/rest.ResponseError'
-      summary: Deletes an existing note.
+        "500":
+          description: Unexpected server internal error
+          schema:
+            $ref: '#/definitions/rest.ResponseError'
+      summary: Delete an existing note.
+    get:
+      description: Get the note from the service if exists. When the note is not exists
+        it will return a NotFound response status.
+      parameters:
+      - description: ID of the note
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successful getting the note
+          schema:
+            $ref: '#/definitions/rest.GetResponse'
+        "400":
+          description: Note's ID parameter is not provided in the path
+          schema:
+            $ref: '#/definitions/rest.ResponseError'
+        "404":
+          description: Note is not found in the service
+          schema:
+            $ref: '#/definitions/rest.ResponseError'
+        "499":
+          description: Cancel error when the request was aborted
+          schema:
+            $ref: '#/definitions/rest.ResponseError'
+        "500":
+          description: Unexpected server internal error
+          schema:
+            $ref: '#/definitions/rest.ResponseError'
+      summary: Get the note from the service.
+  /notes:
+    get:
+      consumes:
+      - application/json
+      description: Fetches notes from the service.
+      parameters:
+      - description: The page number of the fetch pagination. Default is page=1.
+        in: query
+        name: page
+        type: integer
+      - description: The page size of the fetch pagination. Default is size=25.
+        in: query
+        name: size
+        type: integer
+      - description: An option for sorting the notes in the response. Default is sort_by=title.
+          [title/id/created_date]
+        in: query
+        name: sort_by
+        type: string
+      - description: An option for sorting the results in ascending or descending.
+          Default is ascending=true
+        in: query
+        name: ascending
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully fetches notes
+          schema:
+            $ref: '#/definitions/rest.FetchResponse'
+        "499":
+          description: Cancel error when the request was aborted
+          schema:
+            $ref: '#/definitions/rest.ResponseError'
+        "500":
+          description: Unexpected server internal error
+          schema:
+            $ref: '#/definitions/rest.ResponseError'
+      summary: Fetches notes from the service.
 swagger: "2.0"

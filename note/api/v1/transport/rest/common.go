@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"noterfy/note"
 	"noterfy/pkg/util/errorutil"
+	"strconv"
 )
 
 // StatusClientClosed is an http status where the client cancels a request.
@@ -89,4 +90,9 @@ func getMessage(err error) (message string) {
 		message = "Unexpected error"
 	}
 	return
+}
+
+func convertAtoU(s string) uint64 {
+	v, _ := strconv.Atoi(s)
+	return uint64(v)
 }

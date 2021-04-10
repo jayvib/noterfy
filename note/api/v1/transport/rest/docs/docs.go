@@ -33,6 +33,47 @@ var doc = `{
     "basePath": "{{.BasePath}}",
     "paths": {
         "/note": {
+            "put": {
+                "description": "Updating an existing note. If the note to be updated is not found the API will respond a NotFound status.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Update a new note.",
+                "parameters": [
+                    {
+                        "description": "A body containing the updated note",
+                        "name": "UpdateRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/rest.UpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully updated the note",
+                        "schema": {
+                            "$ref": "#/definitions/rest.UpdateResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Note to be update is not found in the service",
+                        "schema": {
+                            "$ref": "#/definitions/rest.ResponseError"
+                        }
+                    },
+                    "499": {
+                        "description": "Cancel error when the request was aborted",
+                        "schema": {
+                            "$ref": "#/definitions/rest.ResponseError"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Creating a new note. The client can assign the note ID with a UUID value but the service will return a conflict error when the note with the ID provided is already exists.",
                 "consumes": [
@@ -76,9 +117,54 @@ var doc = `{
             }
         },
         "/note/{id}": {
+            "get": {
+                "description": "Get the note from the service if exists. When the note is not exists it will return a NotFound response status.",
+                "summary": "Get the note from the service.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the note",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful getting the note",
+                        "schema": {
+                            "$ref": "#/definitions/rest.GetResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Note's ID parameter is not provided in the path",
+                        "schema": {
+                            "$ref": "#/definitions/rest.ResponseError"
+                        }
+                    },
+                    "404": {
+                        "description": "Note is not found in the service",
+                        "schema": {
+                            "$ref": "#/definitions/rest.ResponseError"
+                        }
+                    },
+                    "499": {
+                        "description": "Cancel error when the request was aborted",
+                        "schema": {
+                            "$ref": "#/definitions/rest.ResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Unexpected server internal error",
+                        "schema": {
+                            "$ref": "#/definitions/rest.ResponseError"
+                        }
+                    }
+                }
+            },
             "delete": {
-                "description": "Deletes an existing note.",
-                "summary": "Deletes an existing note.",
+                "description": "Delete an existing note.",
+                "summary": "Delete an existing note.",
                 "parameters": [
                     {
                         "type": "string",
@@ -103,6 +189,70 @@ var doc = `{
                     },
                     "499": {
                         "description": "Cancel error when the request was aborted",
+                        "schema": {
+                            "$ref": "#/definitions/rest.ResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Unexpected server internal error",
+                        "schema": {
+                            "$ref": "#/definitions/rest.ResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/notes": {
+            "get": {
+                "description": "Fetches notes from the service.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Fetches notes from the service.",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "The page number of the fetch pagination. Default is page=1.",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "The page size of the fetch pagination. Default is size=25.",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "An option for sorting the notes in the response. Default is sort_by=title. [title/id/created_date]",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "An option for sorting the results in ascending or descending. Default is ascending=true",
+                        "name": "ascending",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully fetches notes",
+                        "schema": {
+                            "$ref": "#/definitions/rest.FetchResponse"
+                        }
+                    },
+                    "499": {
+                        "description": "Cancel error when the request was aborted",
+                        "schema": {
+                            "$ref": "#/definitions/rest.ResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Unexpected server internal error",
                         "schema": {
                             "$ref": "#/definitions/rest.ResponseError"
                         }
@@ -157,11 +307,52 @@ var doc = `{
                 }
             }
         },
+        "rest.FetchResponse": {
+            "type": "object",
+            "properties": {
+                "notes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/note.Note"
+                    }
+                },
+                "total_count": {
+                    "type": "integer"
+                },
+                "total_page": {
+                    "type": "integer"
+                }
+            }
+        },
+        "rest.GetResponse": {
+            "type": "object",
+            "properties": {
+                "note": {
+                    "$ref": "#/definitions/note.Note"
+                }
+            }
+        },
         "rest.ResponseError": {
             "type": "object",
             "properties": {
                 "message": {
                     "type": "string"
+                }
+            }
+        },
+        "rest.UpdateRequest": {
+            "type": "object",
+            "properties": {
+                "note": {
+                    "$ref": "#/definitions/note.Note"
+                }
+            }
+        },
+        "rest.UpdateResponse": {
+            "type": "object",
+            "properties": {
+                "note": {
+                    "$ref": "#/definitions/note.Note"
                 }
             }
         }
