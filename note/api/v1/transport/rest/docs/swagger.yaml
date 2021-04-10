@@ -4,21 +4,27 @@ definitions:
     properties:
       content:
         description: Content is the content of the note
+        example: Writing an effective note is hard
         type: string
       created_time:
         description: CreatedTime is the timestamp when the note was created.
+        example: "2016-02-24 11:12:13"
         type: string
       id:
         description: ID is a unique identifier UUID of the note.
+        example: ffffffff-ffff-ffff-ffff-ffffffffffff
         type: string
       is_favorite:
         description: IsFavorite is a flag when then the note is marked as favorite
+        example: true
         type: boolean
       title:
         description: Title is the title of the note
+        example: How to Write a Note
         type: string
       updated_time:
         description: UpdateTime is the timestamp when the note last updated.
+        example: "2016-02-24 11:12:13"
         type: string
     type: object
   rest.CreateRequest:
@@ -38,8 +44,10 @@ definitions:
           $ref: '#/definitions/note.Note'
         type: array
       total_count:
+        example: 2
         type: integer
       total_page:
+        example: 5
         type: integer
     type: object
   rest.GetResponse:
@@ -50,6 +58,7 @@ definitions:
   rest.ResponseError:
     properties:
       message:
+        example: Note not found
         type: string
     type: object
   rest.UpdateRequest:
@@ -133,7 +142,7 @@ paths:
           description: Cancel error when the request was aborted
           schema:
             $ref: '#/definitions/rest.ResponseError'
-      summary: Update a new note.
+      summary: Update an existing note.
   /note/{id}:
     delete:
       description: Delete an existing note.
@@ -232,4 +241,10 @@ paths:
           schema:
             $ref: '#/definitions/rest.ResponseError'
       summary: Fetches notes from the service.
+schemes:
+- http
+- https
 swagger: "2.0"
+tags:
+- description: Use to interact to the Noterfy note service.
+  name: Note API

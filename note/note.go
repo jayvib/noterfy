@@ -25,17 +25,17 @@ var (
 // Note represents a note.
 type Note struct {
 	// ID is a unique identifier UUID of the note.
-	ID uuid.UUID `json:"id,omitempty"`
+	ID uuid.UUID `json:"id,omitempty" example:"ffffffff-ffff-ffff-ffff-ffffffffffff"`
 	// Title is the title of the note
-	Title *string `json:"title,omitempty"`
+	Title *string `json:"title,omitempty" example:"How to Write a Note"`
 	// Content is the content of the note
-	Content *string `json:"content,omitempty"`
+	Content *string `json:"content,omitempty" example:"Writing an effective note is hard"`
 	// CreatedTime is the timestamp when the note was created.
-	CreatedTime *time.Time `json:"created_time,omitempty"`
+	CreatedTime *time.Time `json:"created_time,omitempty" example:"2016-02-24 11:12:13"`
 	// UpdateTime is the timestamp when the note last updated.
-	UpdatedTime *time.Time `json:"updated_time,omitempty"`
+	UpdatedTime *time.Time `json:"updated_time,omitempty" example:"2016-02-24 11:12:13"`
 	// IsFavorite is a flag when then the note is marked as favorite
-	IsFavorite *bool `json:"is_favorite,omitempty"`
+	IsFavorite *bool `json:"is_favorite,omitempty" example:"true"`
 }
 
 // SetID sets the id of the note.

@@ -41,7 +41,7 @@ var doc = `{
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Update a new note.",
+                "summary": "Update an existing note.",
                 "parameters": [
                     {
                         "description": "A body containing the updated note",
@@ -267,27 +267,33 @@ var doc = `{
             "properties": {
                 "content": {
                     "description": "Content is the content of the note",
-                    "type": "string"
+                    "type": "string",
+                    "example": "Writing an effective note is hard"
                 },
                 "created_time": {
                     "description": "CreatedTime is the timestamp when the note was created.",
-                    "type": "string"
+                    "type": "string",
+                    "example": "2016-02-24 11:12:13"
                 },
                 "id": {
                     "description": "ID is a unique identifier UUID of the note.",
-                    "type": "string"
+                    "type": "string",
+                    "example": "ffffffff-ffff-ffff-ffff-ffffffffffff"
                 },
                 "is_favorite": {
                     "description": "IsFavorite is a flag when then the note is marked as favorite",
-                    "type": "boolean"
+                    "type": "boolean",
+                    "example": true
                 },
                 "title": {
                     "description": "Title is the title of the note",
-                    "type": "string"
+                    "type": "string",
+                    "example": "How to Write a Note"
                 },
                 "updated_time": {
                     "description": "UpdateTime is the timestamp when the note last updated.",
-                    "type": "string"
+                    "type": "string",
+                    "example": "2016-02-24 11:12:13"
                 }
             }
         },
@@ -317,10 +323,12 @@ var doc = `{
                     }
                 },
                 "total_count": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 2
                 },
                 "total_page": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 5
                 }
             }
         },
@@ -336,7 +344,8 @@ var doc = `{
             "type": "object",
             "properties": {
                 "message": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Note not found"
                 }
             }
         },
@@ -356,7 +365,13 @@ var doc = `{
                 }
             }
         }
-    }
+    },
+    "tags": [
+        {
+            "description": "Use to interact to the Noterfy note service.",
+            "name": "Note API"
+        }
+    ]
 }`
 
 type swaggerInfo struct {
@@ -373,7 +388,7 @@ var SwaggerInfo = swaggerInfo{
 	Version:     "0.2.1",
 	Host:        "localhost:8080",
 	BasePath:    "/v1",
-	Schemes:     []string{},
+	Schemes:     []string{"http", "https"},
 	Title:       "Noterfy Note Service",
 	Description: "Noterfy Note Service.",
 }

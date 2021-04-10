@@ -24,7 +24,14 @@ import (
 //
 // @host localhost:8080
 // @BasePath /v1
-
+//
+// @tag.name Note API
+// @tag.description Use to interact to the Noterfy note service.
+//
+// @schemes http https
+//
+// @query.collection.format multi
+//
 // makeHandler initializes all the routes for the note service
 // handlers and return the routed handler.
 func makeHandler(svc note.Service) http.Handler {
@@ -167,8 +174,8 @@ type FetchRequest struct {
 // FetchResponse is a container for the fetch response API.
 type FetchResponse struct {
 	Notes      []*note.Note `json:"notes"`
-	TotalCount uint64       `json:"total_count"`
-	TotalPage  uint64       `json:"total_page"`
+	TotalCount uint64       `json:"total_count" example:"2"`
+	TotalPage  uint64       `json:"total_page" example:"5"`
 }
 
 func decodeFetchRequest(_ context.Context, r *http.Request) (response interface{}, err error) {
