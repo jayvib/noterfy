@@ -3,8 +3,8 @@
 DOCKER_IMAGE_BUILD_FLAG="no-force"
 
 # Include the envfile that contains all the metadata about the app
-include build/noterfy/envfile
-export $(shell sed 's/=.*//' build/noterfy/envfile)
+include build/noterfy/build.env
+export $(shell sed 's/=.*//' build/noterfy/build.env)
 
 APP_NAME:=noterfy
 GIT_COMMIT:=$(shell git rev-parse HEAD)
@@ -91,10 +91,10 @@ ifdef NOTERFY_VERSION
 	@echo "🛠 Building Noterfy version: ${NOTERFY_VERSION}"
 endif
 ifeq ($(wildcard ./bin/.*),)
-	@echo " ---> Creating bin directory"
+	@echo "🛠 📂 Creating bin directory"
 	@mkdir ./bin
 endif
-	@echo " ---> Building Noterfy"
+	@echo "🛠 Building Noterfy"
 	@CGO_ENABLED=0 go build \
 		-a \
 		-tags netgo \
@@ -112,10 +112,17 @@ define DOCKER_BUILD_NOTERFY_HELP_INFO
 endef
 .PHONY: docker-build-noterfy
 docker-build-noterfy:
+ifeq ($(DOCKER_BUILDKIT), 1)
+	@echo "👉 Docker BuildKit enable"
+endif
 	@echo "🛠 Building Noterfy Docker Image"
-	docker build -t ${APP_NAME} -f ./build/noterfy/docker/Dockerfile .
-	docker tag ${APP_NAME} jayvib/${APP_NAME}:latest
-	docker tag ${APP_NAME} jayvib/${APP_NAME}:${NOTERFY_VERSION}
+	@docker build \
+		-t ${APP_NAME} \
+		--build-arg NOTERFY_BUILD_COMMIT=${GIT_COMMIT} \
+		-f ./build/noterfy/docker/Dockerfile \
+		.
+	@docker tag ${APP_NAME} jayvib/${APP_NAME}:latest
+	@docker tag ${APP_NAME} jayvib/${APP_NAME}:${NOTERFY_VERSION}
 
 define FMT_HELP_INFO
 # Use to format the Go source code.
@@ -147,7 +154,7 @@ define LINT_HELP_INFO
 endef
 .PHONY: lint
 lint: lint-check-deps
-	@echo "[golangci-lint] linting sources"
+	@echo "🔎🔎🔎 Linting sources"
 	@golangci-lint run \
 		-E misspell \
 		-E golint \
