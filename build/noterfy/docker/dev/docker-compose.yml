@@ -1,4 +1,4 @@
-version: "3.5"
+version: "3.8"
 
 # ⚠⚠⚠ This compose file is use for development purpose only.
 
@@ -41,5 +41,4 @@ volumes:
 secrets:  # Use for stack. But for development will just use the volume bind
   noterfy-secret:
     file: ./config.yaml
-    name: noterfy-secret
 
