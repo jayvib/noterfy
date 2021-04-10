@@ -9,6 +9,20 @@ export $(shell sed 's/=.*//' build/noterfy/envfile)
 APP_NAME:=noterfy
 GIT_COMMIT:=$(shell git rev-parse HEAD)
 
+define DOCKER_DEPLOY_DEV_HELP_INFO
+# Use to deploy the development stage services to Docker Swarm
+# mode.
+#
+# Make sure that the Docker in swarm mode already otherwise Docker
+# will throw an error.
+#
+# Example:
+#		make docker-deploy-dev
+endef
+.PHONY: docker-deploy-dev
+docker-deploy-dev:
+	docker deploy -c ./build/noterfy/docker/dev/docker-stack.yml $(APP_NAME)
+
 define LOCAL_SERVER_HELP_INFO
 # Use to run noterfy server in local machine.
 #
