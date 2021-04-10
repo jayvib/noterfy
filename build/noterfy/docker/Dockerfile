@@ -18,6 +18,8 @@ RUN apk update && \
 		apk --update --no-cache add tzdata && \
 		apk add --no-cache bash ca-certificates openssh
 RUN set -ex && apk add --no-cache --virtual bash musl-dev openssl
+ARG NOTERFY_BUILD_COMMIT
+ENV NOTERFY_BUILD_COMMIT $NOTERFY_BUILD_COMMIT
 RUN mkdir /home/noterfy
 EXPOSE 50001
 COPY --from=builder /go/src/noterfy/bin/noterfy.linux /home/noterfy/
