@@ -3,8 +3,8 @@
 DOCKER_IMAGE_BUILD_FLAG="no-force"
 
 # Include the envfile that contains all the metadata about the app
-include build/noterfy/envfile
-export $(shell sed 's/=.*//' build/noterfy/envfile)
+include build/noterfy/build.env
+export $(shell sed 's/=.*//' build/noterfy/build.env)
 
 APP_NAME:=noterfy
 GIT_COMMIT:=$(shell git rev-parse HEAD)
@@ -112,6 +112,9 @@ define DOCKER_BUILD_NOTERFY_HELP_INFO
 endef
 .PHONY: docker-build-noterfy
 docker-build-noterfy:
+ifeq ($(DOCKER_BUILDKIT), 1)
+	@echo "👉 Docker BuildKit enable"
+endif
 	@echo "🛠 Building Noterfy Docker Image"
 	docker build -t ${APP_NAME} -f ./build/noterfy/docker/Dockerfile .
 	docker tag ${APP_NAME} jayvib/${APP_NAME}:latest
