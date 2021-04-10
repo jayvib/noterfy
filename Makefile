@@ -21,7 +21,7 @@ define DOCKER_DEPLOY_DEV_HELP_INFO
 endef
 .PHONY: docker-deploy-dev
 docker-deploy-dev:
-	docker deploy -c ./build/noterfy/docker/dev/docker-stack.yml $(APP_NAME)
+	docker stack deploy -c ./build/noterfy/docker/dev/docker-stack.yml $(APP_NAME)
 
 define LOCAL_SERVER_HELP_INFO
 # Use to run noterfy server in local machine.
