@@ -17,7 +17,7 @@
     "host": "localhost:8080",
     "basePath": "/v1",
     "paths": {
-        "/purchase-order": {
+        "/note": {
             "post": {
                 "description": "Creating a new note. The client can assign the note ID with a UUID value but the service will return a conflict error when the note with the ID provided is already exists.",
                 "consumes": [
@@ -47,6 +47,41 @@
                     },
                     "409": {
                         "description": "Conflict error due to the new note with an ID already exists in the service",
+                        "schema": {
+                            "$ref": "#/definitions/rest.ResponseError"
+                        }
+                    },
+                    "499": {
+                        "description": "Cancel error when the request was aborted",
+                        "schema": {
+                            "$ref": "#/definitions/rest.ResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/note/{id}": {
+            "delete": {
+                "description": "Deletes an existing note.",
+                "summary": "Deletes an existing note.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the note",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful deleting a note",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Note's ID parameter is not provided in the path",
                         "schema": {
                             "$ref": "#/definitions/rest.ResponseError"
                         }

@@ -103,7 +103,7 @@ func decodeCreateRequest(_ context.Context, r *http.Request) (response interface
 // @Success 200 {object} CreateResponse "Successfully created a new note"
 // @Failure 409 {object} ResponseError "Conflict error due to the new note with an ID already exists in the service"
 // @Failure 499 {object} ResponseError "Cancel error when the request was aborted"
-// @Router /purchase-order [post]
+// @Router /note [post]
 func makeCreateEndpoint(svc createService) endpoint.Endpoint {
 	return func(ctx context.Context, req interface{}) (interface{}, error) {
 		request := req.(CreateRequest)
@@ -133,6 +133,14 @@ func decodeDeleteRequest(_ context.Context, r *http.Request) (interface{}, error
 	return DeleteRequest{ID: uuid.MustParse(id)}, nil
 }
 
+// DeleteRequest godoc
+// @Summary Delete an existing note.
+// @Description Delete an existing note.
+// @Param id path string true "ID of the note"
+// @Success 200 {string} string "Successful deleting a note"
+// @Failure 400 {object} ResponseError "Note's ID parameter is not provided in the path"
+// @Failure 499 {object} ResponseError "Cancel error when the request was aborted"
+// @Router /note/{id} [delete]
 func makeDeleteEndpoint(svc deleteService) endpoint.Endpoint {
 	return func(ctx context.Context, req interface{}) (interface{}, error) {
 		request := req.(DeleteRequest)

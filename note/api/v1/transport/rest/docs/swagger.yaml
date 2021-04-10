@@ -49,7 +49,7 @@ info:
   title: Noterfy Note Service
   version: 0.2.1
 paths:
-  /purchase-order:
+  /note:
     post:
       consumes:
       - application/json
@@ -80,4 +80,27 @@ paths:
           schema:
             $ref: '#/definitions/rest.ResponseError'
       summary: Create a new note.
+  /note/{id}:
+    delete:
+      description: Deletes an existing note.
+      parameters:
+      - description: ID of the note
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successful deleting a note
+          schema:
+            type: string
+        "400":
+          description: Note's ID parameter is not provided in the path
+          schema:
+            $ref: '#/definitions/rest.ResponseError'
+        "499":
+          description: Cancel error when the request was aborted
+          schema:
+            $ref: '#/definitions/rest.ResponseError'
+      summary: Deletes an existing note.
 swagger: "2.0"
