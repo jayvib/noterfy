@@ -24,3 +24,13 @@ endef
 .PHONY: gen-swagger-doc-rest
 gen-swagger-doc-rest:
 	swag init -g ./api/v1/transport/rest/handler.go --output ./api/v1/transport/rest/docs
+
+define START_NOTE_DOCUMENTATION_SERVER_HELP_INFO
+# Use to run the Note service swagger documentation.
+#
+# Example:
+#		make start-note-documentation-server
+endef
+.PHONY: start-note-documentation-server
+start-note-documentation-server:
+	@go run cmd/notedocs/main.go
