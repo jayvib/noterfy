@@ -8,10 +8,6 @@ import (
 	"net/http"
 )
 
-type deleteService interface {
-	Delete(ctx context.Context, id uuid.UUID) error
-}
-
 type deleteRequest struct {
 	ID uuid.UUID `json:"id"`
 }

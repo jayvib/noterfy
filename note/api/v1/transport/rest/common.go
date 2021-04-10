@@ -52,9 +52,7 @@ func encodeError(ew errorWrapper, w http.ResponseWriter) {
 
 	logrus.Error(ew.origErr)
 
-	_ = json.NewEncoder(w).Encode(struct {
-		Message string `json:"message,omitempty"`
-	}{
+	_ = json.NewEncoder(w).Encode(ResponseError{
 		Message: ew.message,
 	})
 }

@@ -3,6 +3,7 @@ module noterfy
 go 1.16
 
 require (
+	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/go-kit/kit v0.10.0
 	github.com/golang/protobuf v1.5.2
 	github.com/google/uuid v1.2.0
@@ -14,5 +15,6 @@ require (
 	github.com/spf13/cobra v1.1.3
 	github.com/spf13/viper v1.7.1
 	github.com/stretchr/testify v1.7.0
+	github.com/swaggo/swag v1.7.0
 	google.golang.org/protobuf v1.26.0
 )

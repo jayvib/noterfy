@@ -14,3 +14,6 @@ proto:
 		--go-grpc_out=. \
 		--go-grpc_opt=paths=source_relative \
 		proto/note.proto
+
+gen-swagger-doc-rest:
+	swag init -g ./api/v1/transport/rest/handler.go --output ./api/v1/transport/rest/docs

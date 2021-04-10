@@ -1,11 +1,28 @@
 package rest
 
 import (
+	"context"
+	"encoding/json"
+	"github.com/go-kit/kit/endpoint"
 	httptransport "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
 	"net/http"
 	"noterfy/note"
 )
+
+// @title Noterfy Note Service
+// @version 0.2.1
+// @description  Noterfy Note Service.
+// @termsOfService http://swagger.io/terms/
+//
+// @contact.name Jayson Vibandor
+// @contact.email jayson.vibandor@gmail.com
+//
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+//
+// @host localhost:8080
+// @BasePath /v1
 
 // makeHandler initializes all the routes for the note service
 // handlers and return the routed handler.
@@ -48,4 +65,53 @@ func makeHandler(svc note.Service) http.Handler {
 	router.Handle("/notes", fetchHandler).Methods(http.MethodGet)
 
 	return router
+}
+
+// CreateRequest is a container for the create request.
+type CreateRequest struct {
+	Note *note.Note `json:"note"`
+}
+
+// CreateResponse is a container fo a successful create response.
+type CreateResponse struct {
+	Note *note.Note `json:"note"`
+}
+
+func decodeCreateRequest(_ context.Context, r *http.Request) (response interface{}, err error) {
+	var req CreateRequest
+	err = json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		cerr := r.Body.Close()
+		if cerr != nil && err == nil {
+			err = cerr
+		}
+	}()
+
+	return req, nil
+}
+
+// CreateRequest godoc
+// @Summary Create a new note.
+// @Description Create a new note.
+// @Accept json
+// @Produce json
+// @Param CreateRequest body CreateRequest true "A body containing the new note"
+// @Success 200 {object} CreateResponse "Successfully created a new note"
+// @Router /purchase-order [post]
+func makeCreateEndpoint(svc createService) endpoint.Endpoint {
+	return func(ctx context.Context, req interface{}) (interface{}, error) {
+		request := req.(CreateRequest)
+		newNote, err := svc.Create(ctx, request.Note)
+		if err != nil {
+			return errorWrapper{
+				origErr:    err,
+				message:    getMessage(err),
+				statusCode: getStatusCode(err),
+			}, nil
+		}
+		return CreateResponse{Note: newNote}, nil
+	}
 }

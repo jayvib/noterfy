@@ -9,10 +9,6 @@ import (
 	"noterfy/note"
 )
 
-type getService interface {
-	Get(ctx context.Context, id uuid.UUID) (*note.Note, error)
-}
-
 type getRequest struct {
 	ID uuid.UUID `json:"id"`
 }

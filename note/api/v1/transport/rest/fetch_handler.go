@@ -8,10 +8,6 @@ import (
 	"strconv"
 )
 
-type fetchService interface {
-	Fetch(ctx context.Context, p *note.Pagination) (note.Iterator, error)
-}
-
 type fetchRequest struct {
 	Pagination *note.Pagination
 }

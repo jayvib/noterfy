@@ -1,0 +1,67 @@
+basePath: /v1
+definitions:
+  note.Note:
+    properties:
+      content:
+        description: Content is the content of the note
+        type: string
+      created_time:
+        description: CreatedTime is the timestamp when the note was created.
+        type: string
+      id:
+        description: ID is a unique identifier UUID of the note.
+        type: string
+      is_favorite:
+        description: IsFavorite is a flag when then the note is marked as favorite
+        type: boolean
+      title:
+        description: Title is the title of the note
+        type: string
+      updated_time:
+        description: UpdateTime is the timestamp when the note last updated.
+        type: string
+    type: object
+  rest.CreateRequest:
+    properties:
+      note:
+        $ref: '#/definitions/note.Note'
+    type: object
+  rest.CreateResponse:
+    properties:
+      note:
+        $ref: '#/definitions/note.Note'
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: jayson.vibandor@gmail.com
+    name: Jayson Vibandor
+  description: Noterfy Note Service.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Noterfy Note Service
+  version: 0.2.1
+paths:
+  /purchase-order:
+    post:
+      consumes:
+      - application/json
+      description: Create a new note.
+      parameters:
+      - description: A body containing the new note
+        in: body
+        name: CreateRequest
+        required: true
+        schema:
+          $ref: '#/definitions/rest.CreateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully created a new note
+          schema:
+            $ref: '#/definitions/rest.CreateResponse'
+      summary: Create a new note.
+swagger: "2.0"

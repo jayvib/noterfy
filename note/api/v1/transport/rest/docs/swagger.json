@@ -1,0 +1,99 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Noterfy Note Service.",
+        "title": "Noterfy Note Service",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "Jayson Vibandor",
+            "email": "jayson.vibandor@gmail.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "0.2.1"
+    },
+    "host": "localhost:8080",
+    "basePath": "/v1",
+    "paths": {
+        "/purchase-order": {
+            "post": {
+                "description": "Create a new note.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Create a new note.",
+                "parameters": [
+                    {
+                        "description": "A body containing the new note",
+                        "name": "CreateRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/rest.CreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully created a new note",
+                        "schema": {
+                            "$ref": "#/definitions/rest.CreateResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "note.Note": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "description": "Content is the content of the note",
+                    "type": "string"
+                },
+                "created_time": {
+                    "description": "CreatedTime is the timestamp when the note was created.",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "ID is a unique identifier UUID of the note.",
+                    "type": "string"
+                },
+                "is_favorite": {
+                    "description": "IsFavorite is a flag when then the note is marked as favorite",
+                    "type": "boolean"
+                },
+                "title": {
+                    "description": "Title is the title of the note",
+                    "type": "string"
+                },
+                "updated_time": {
+                    "description": "UpdateTime is the timestamp when the note last updated.",
+                    "type": "string"
+                }
+            }
+        },
+        "rest.CreateRequest": {
+            "type": "object",
+            "properties": {
+                "note": {
+                    "$ref": "#/definitions/note.Note"
+                }
+            }
+        },
+        "rest.CreateResponse": {
+            "type": "object",
+            "properties": {
+                "note": {
+                    "$ref": "#/definitions/note.Note"
+                }
+            }
+        }
+    }
+}
