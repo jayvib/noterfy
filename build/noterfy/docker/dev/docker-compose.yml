@@ -20,7 +20,8 @@ services:
         source: noterfy-volume
         target: /etc/noterfy/data
     secrets:
-      - config.yaml
+      - source: noterfy-secret
+        target: config.yaml
     env_file:
       - ./noterfy.env
     healthcheck:
@@ -38,7 +39,7 @@ volumes:
   noterfy-volume:
 
 secrets:  # Use for stack. But for development will just use the volume bind
-  config.yaml:
+  noterfy-secret:
     file: ./config.yaml
     name: noterfy-secret
 
