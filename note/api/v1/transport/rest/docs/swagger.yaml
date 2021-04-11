@@ -1,0 +1,235 @@
+basePath: /v1
+definitions:
+  note.Note:
+    properties:
+      content:
+        description: Content is the content of the note
+        type: string
+      created_time:
+        description: CreatedTime is the timestamp when the note was created.
+        type: string
+      id:
+        description: ID is a unique identifier UUID of the note.
+        type: string
+      is_favorite:
+        description: IsFavorite is a flag when then the note is marked as favorite
+        type: boolean
+      title:
+        description: Title is the title of the note
+        type: string
+      updated_time:
+        description: UpdateTime is the timestamp when the note last updated.
+        type: string
+    type: object
+  rest.CreateRequest:
+    properties:
+      note:
+        $ref: '#/definitions/note.Note'
+    type: object
+  rest.CreateResponse:
+    properties:
+      note:
+        $ref: '#/definitions/note.Note'
+    type: object
+  rest.FetchResponse:
+    properties:
+      notes:
+        items:
+          $ref: '#/definitions/note.Note'
+        type: array
+      total_count:
+        type: integer
+      total_page:
+        type: integer
+    type: object
+  rest.GetResponse:
+    properties:
+      note:
+        $ref: '#/definitions/note.Note'
+    type: object
+  rest.ResponseError:
+    properties:
+      message:
+        type: string
+    type: object
+  rest.UpdateRequest:
+    properties:
+      note:
+        $ref: '#/definitions/note.Note'
+    type: object
+  rest.UpdateResponse:
+    properties:
+      note:
+        $ref: '#/definitions/note.Note'
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: jayson.vibandor@gmail.com
+    name: Jayson Vibandor
+  description: Noterfy Note Service.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Noterfy Note Service
+  version: 0.2.1
+paths:
+  /note:
+    post:
+      consumes:
+      - application/json
+      description: Creating a new note. The client can assign the note ID with a UUID
+        value but the service will return a conflict error when the note with the
+        ID provided is already exists.
+      parameters:
+      - description: A body containing the new note
+        in: body
+        name: CreateRequest
+        required: true
+        schema:
+          $ref: '#/definitions/rest.CreateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully created a new note
+          schema:
+            $ref: '#/definitions/rest.CreateResponse'
+        "409":
+          description: Conflict error due to the new note with an ID already exists
+            in the service
+          schema:
+            $ref: '#/definitions/rest.ResponseError'
+        "499":
+          description: Cancel error when the request was aborted
+          schema:
+            $ref: '#/definitions/rest.ResponseError'
+      summary: Create a new note.
+    put:
+      consumes:
+      - application/json
+      description: Updating an existing note. If the note to be updated is not found
+        the API will respond a NotFound status.
+      parameters:
+      - description: A body containing the updated note
+        in: body
+        name: UpdateRequest
+        required: true
+        schema:
+          $ref: '#/definitions/rest.UpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully updated the note
+          schema:
+            $ref: '#/definitions/rest.UpdateResponse'
+        "404":
+          description: Note to be update is not found in the service
+          schema:
+            $ref: '#/definitions/rest.ResponseError'
+        "499":
+          description: Cancel error when the request was aborted
+          schema:
+            $ref: '#/definitions/rest.ResponseError'
+      summary: Update a new note.
+  /note/{id}:
+    delete:
+      description: Delete an existing note.
+      parameters:
+      - description: ID of the note
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successful deleting a note
+          schema:
+            type: string
+        "400":
+          description: Note's ID parameter is not provided in the path
+          schema:
+            $ref: '#/definitions/rest.ResponseError'
+        "499":
+          description: Cancel error when the request was aborted
+          schema:
+            $ref: '#/definitions/rest.ResponseError'
+        "500":
+          description: Unexpected server internal error
+          schema:
+            $ref: '#/definitions/rest.ResponseError'
+      summary: Delete an existing note.
+    get:
+      description: Get the note from the service if exists. When the note is not exists
+        it will return a NotFound response status.
+      parameters:
+      - description: ID of the note
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successful getting the note
+          schema:
+            $ref: '#/definitions/rest.GetResponse'
+        "400":
+          description: Note's ID parameter is not provided in the path
+          schema:
+            $ref: '#/definitions/rest.ResponseError'
+        "404":
+          description: Note is not found in the service
+          schema:
+            $ref: '#/definitions/rest.ResponseError'
+        "499":
+          description: Cancel error when the request was aborted
+          schema:
+            $ref: '#/definitions/rest.ResponseError'
+        "500":
+          description: Unexpected server internal error
+          schema:
+            $ref: '#/definitions/rest.ResponseError'
+      summary: Get the note from the service.
+  /notes:
+    get:
+      consumes:
+      - application/json
+      description: Fetches notes from the service.
+      parameters:
+      - description: The page number of the fetch pagination. Default is page=1.
+        in: query
+        name: page
+        type: integer
+      - description: The page size of the fetch pagination. Default is size=25.
+        in: query
+        name: size
+        type: integer
+      - description: An option for sorting the notes in the response. Default is sort_by=title.
+          [title/id/created_date]
+        in: query
+        name: sort_by
+        type: string
+      - description: An option for sorting the results in ascending or descending.
+          Default is ascending=true
+        in: query
+        name: ascending
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully fetches notes
+          schema:
+            $ref: '#/definitions/rest.FetchResponse'
+        "499":
+          description: Cancel error when the request was aborted
+          schema:
+            $ref: '#/definitions/rest.ResponseError'
+        "500":
+          description: Unexpected server internal error
+          schema:
+            $ref: '#/definitions/rest.ResponseError'
+      summary: Fetches notes from the service.
+swagger: "2.0"
