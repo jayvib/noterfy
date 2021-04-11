@@ -5,8 +5,6 @@ import (
 	"strings"
 )
 
-// ❎ TODO: Create testing for each sorter.
-
 // GetSortBy parses s and get the equivalent value of SortBy type.
 func GetSortBy(s string) SortBy {
 	lowerValue := strings.ToLower(s)

@@ -16,8 +16,6 @@ import (
 	"testing"
 )
 
-// TODO: Refactor code.
-
 var dummyCtx = context.TODO()
 
 var dummyNote = &note.Note{
@@ -164,7 +162,15 @@ func (s *TestSuite) TestDelete() {
 		s.Equal(note.ErrNilID, err)
 	})
 
-	// TODO: Add testing for context cancellation.
+	s.Run("While deleting to  store it returns an error", func() {
+		store := memory.New()
+		svc := New(store)
+		ctx, cancel := context.WithCancel(context.Background())
+		cancel()
+		err := svc.Delete(ctx, uuid.New())
+		s.Error(err)
+		s.Equal(note.ErrCancelled, err)
+	})
 
 }
 
