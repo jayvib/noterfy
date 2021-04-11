@@ -6,6 +6,7 @@ import (
 	"noterfy/api/middleware"
 	"noterfy/api/server"
 	"noterfy/api/server/meta"
+	"noterfy/api/server/routes"
 	"noterfy/config"
 	"noterfy/note/api/v1/transport/rest"
 	noteservice "noterfy/note/service"
@@ -49,6 +50,7 @@ func main() {
 		BuildCommit: BuildCommit,
 		BuildDate:   BuildDate,
 	})...)
+	srv.AddRoutes(routes.HealthCheckRoute())
 	srv.AddRoutes(rest.Routes(svc)...)
 
 	defer srv.Close()

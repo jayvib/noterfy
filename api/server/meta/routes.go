@@ -41,6 +41,7 @@ type Metadata struct {
 	BuildDate   time.Time `json:"build_date,omitempty"`
 }
 
+// TODO: Add this in the swagger documentation
 type metaRequest struct{}
 
 type metaResponse struct {
