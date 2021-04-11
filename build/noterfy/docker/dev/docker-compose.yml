@@ -1,4 +1,4 @@
-version: "3.8"
+version: "3.5"
 
 # ⚠⚠⚠ This compose file is use for development purpose only.
 
@@ -25,12 +25,11 @@ services:
     env_file:
       - ./noterfy.env
     healthcheck:
-      disable: true # Need to be implemented
-#      test: ["CMD", "curl", "-f", "http://localhost:50001/health"]
-#      interval: 5m
-#      timeout: 10s
-#      retries: 3
-#      start_period: 40s
+      test: ["CMD", "curl", "-f", "http://localhost:50001/health"]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
 networks:
   noterfy-backend:

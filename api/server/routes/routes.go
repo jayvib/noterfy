@@ -47,6 +47,7 @@ func encodeResponse(_ context.Context, w http.ResponseWriter, resp interface{}) 
 
 func makeHealthCheckEndpoint() endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		// Naive-way implementation.
 		response = &HealthCheckResponse{
 			Message: "OK",
 		}

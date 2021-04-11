@@ -2,9 +2,7 @@
 
 # STEP 1: Build the executable
 FROM golang:1.16.3-alpine3.13 as builder
-RUN apk update && \
-		apk upgrade && \
-	  apk --update add git gcc make
+RUN apk --update add git make
 WORKDIR /go/src/noterfy
 COPY . .
 RUN make mod
@@ -12,11 +10,10 @@ RUN make build-noterfy
 
 # STEP 2: Distribute the executable
 FROM alpine:3.7
-RUN apk update && \
-		apk upgrade && \
-		apk --update --no-cache add tzdata && \
-		apk add --no-cache bash ca-certificates openssh
-RUN set -ex && apk add --no-cache --virtual bash musl-dev openssl
+RUN apk add --no-cache \
+			bash \
+			ca-certificates \
+			curl \
 ARG NOTERFY_BUILD_COMMIT
 ARG NOTERFY_VERSION
 LABEL "com.noterfy.description"="The server engine of the Noterfy Application."
