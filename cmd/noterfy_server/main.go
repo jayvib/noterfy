@@ -42,6 +42,11 @@ func main() {
 		Port: conf.Server.Port,
 		Middlewares: []api.NamedMiddleware{
 			middleware.NewLoggingMiddleware(),
+			middleware.NewRateLimitMiddleware(middleware.RateLimitConfig{
+				DefaultExpirationTTL: time.Second,
+				ExpireJobInterval:    time.Second,
+				MaxBurst:             1,
+			}),
 		},
 	})
 
