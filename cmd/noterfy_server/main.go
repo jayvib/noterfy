@@ -33,13 +33,20 @@ func main() {
 
 	conf := config.New()
 
+	metadata := &meta.Metadata{
+		Version:     Version,
+		BuildCommit: BuildCommit,
+		BuildDate:   BuildDate,
+	}
+
 	file, err := os.OpenFile(filepath.Join(conf.Store.File.Path, dbFileName), os.O_CREATE|os.O_RDWR, 0666)
 	mustNoError(err)
 	defer func() { _ = file.Close() }()
 
 	svc := noteservice.New(filestore.New(file))
 	srv := server.New(&server.Config{
-		Port: conf.Server.Port,
+		Port:     conf.Server.Port,
+		Metadata: metadata,
 		Middlewares: []api.NamedMiddleware{
 			middleware.NewLoggingMiddleware(),
 			middleware.NewRateLimitMiddleware(middleware.RateLimitConfig{
@@ -50,15 +57,9 @@ func main() {
 		},
 	})
 
-	srv.AddRoutes(meta.Routes(&meta.Metadata{
-		Version:     Version,
-		BuildCommit: BuildCommit,
-		BuildDate:   BuildDate,
-	})...)
+	srv.AddRoutes(meta.Routes(metadata)...)
 	srv.AddRoutes(routes.HealthCheckRoute())
 	srv.AddRoutes(rest.Routes(svc)...)
-
-	defer srv.Close()
 	mustNoError(srv.ListenAndServe())
 }
 
