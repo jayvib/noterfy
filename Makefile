@@ -7,7 +7,7 @@ include build/noterfy/build.env
 export $(shell sed 's/=.*//' build/noterfy/build.env)
 
 APP_NAME:=noterfy
-GIT_COMMIT:=$(shell git rev-parse HEAD)
+GIT_COMMIT:=$(shell git rev-parse --short HEAD)
 
 define DOCKER_DEPLOY_DEV_HELP_INFO
 # Use to deploy the development stage services to Docker Swarm
@@ -88,7 +88,7 @@ endef
 .PHONY: build-noterfy
 build-noterfy: # Use to build the executable file of the noterfy. The executable will store in ./bin/ directory
 ifdef NOTERFY_VERSION
-	@echo "🛠 Building Noterfy version: ${NOTERFY_VERSION}"
+	@echo "🛠 Noterfy Version: ${NOTERFY_VERSION}"
 endif
 ifeq ($(wildcard ./bin/.*),)
 	@echo "🛠 📂 Creating bin directory"
@@ -98,8 +98,7 @@ endif
 	@CGO_ENABLED=0 go build \
 		-a \
 		-tags netgo \
-		-ldflags '-w -extldflags "-static"' \
-		-ldflags '-X "main.Version=${NOTERFY_VERSION}" -X "main.BuildCommit=${GIT_COMMIT}"' \
+		-ldflags '-extldflags "-static" -w -s -X "main.Version=${NOTERFY_VERSION}" -X "main.BuildCommit=${GIT_COMMIT}"' \
 		-o ./bin/noterfy.linux \
 		./cmd/noterfy_server/main.go
 
