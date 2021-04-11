@@ -13,7 +13,7 @@ FROM alpine:3.7
 RUN apk add --no-cache \
 			bash \
 			ca-certificates \
-			curl \
+			curl
 ARG NOTERFY_BUILD_COMMIT
 ARG NOTERFY_VERSION
 LABEL "com.noterfy.description"="The server engine of the Noterfy Application."
