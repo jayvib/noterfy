@@ -2,9 +2,12 @@ package rest
 
 import (
 	httptransport "github.com/go-kit/kit/transport/http"
+	"github.com/gorilla/mux"
+	httpswagger "github.com/swaggo/http-swagger"
 	"net/http"
 	"noterfy/api"
 	"noterfy/note"
+	_ "noterfy/note/api/v1/transport/rest/docs" // To register the Swagger documentation
 	nhttp "noterfy/pkg/http"
 )
 
@@ -54,4 +57,11 @@ func getRoutes(svc note.Service) []api.Route {
 		&nhttp.Route{HandlerValue: fetchHandler, MethodValue: http.MethodGet, PathValue: "/v1/notes"},
 	}
 	return routes
+}
+
+// RegisterDocumentationRoute registers the documentation route to r.
+func RegisterDocumentationRoute(r *mux.Router) {
+	r.PathPrefix("/v1").Handler(httpswagger.Handler(
+		httpswagger.URL("./doc/doc.json"),
+	))
 }
