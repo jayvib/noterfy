@@ -1,16 +1,18 @@
 package server
 
 import (
+	"context"
 	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 	"net/http"
 	"noterfy/api"
 	"os"
+	"os/signal"
+	"syscall"
 	"text/tabwriter"
+	"time"
 )
-
-// TODO: Add a helth check endoint
 
 // New takes config for all the arguments tat the server needs and
 // return a server instance.
@@ -85,13 +87,34 @@ func (s *Server) printInfo() {
 }
 
 // ListenAndServe serves clients request by the server.
-func (s *Server) ListenAndServe() error {
+func (s *Server) ListenAndServe() (err error) {
 	if !s.isInited {
 		s.init()
 	}
 
-	logrus.Infof("API listen on %s\n", s.server.Addr)
-	return s.server.ListenAndServe()
+	done := make(chan os.Signal, 1)
+	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+
+	go func() {
+		fmt.Printf("\U0001F7E2 Server Started Listening on %s\n", s.server.Addr)
+		serr := s.server.ListenAndServe()
+		if serr != nil && serr != http.ErrServerClosed && err == nil {
+			err = serr
+		}
+	}()
+
+	<-done
+	fmt.Println("🛑 Server Stopped")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := s.server.Shutdown(ctx); err != nil {
+		return fmt.Errorf("server shutdown failed: %w", err)
+	}
+
+	fmt.Println("💯 Server Exited Properly")
+	return
 }
 
 // Close closes the underlying server.

@@ -88,7 +88,7 @@ endef
 .PHONY: build-noterfy
 build-noterfy: # Use to build the executable file of the noterfy. The executable will store in ./bin/ directory
 ifdef NOTERFY_VERSION
-	@echo "🛠 Noterfy Version: ${NOTERFY_VERSION}"
+	@echo "👉 Noterfy Version: ${NOTERFY_VERSION}"
 endif
 ifeq ($(wildcard ./bin/.*),)
 	@echo "🛠 📂 Creating bin directory"
