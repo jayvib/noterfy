@@ -5,7 +5,6 @@ import (
 	"noterfy/api"
 	"noterfy/api/middleware"
 	"noterfy/api/server"
-	"noterfy/api/server/meta"
 	"noterfy/api/server/routes"
 	"noterfy/config"
 	"noterfy/note/api/v1/transport/rest"
@@ -33,7 +32,7 @@ func main() {
 
 	conf := config.New()
 
-	metadata := &meta.Metadata{
+	metadata := &routes.Metadata{
 		Version:     Version,
 		BuildCommit: BuildCommit,
 		BuildDate:   BuildDate,
@@ -57,8 +56,7 @@ func main() {
 		},
 	})
 
-	srv.AddRoutes(meta.Routes(metadata)...)
-	srv.AddRoutes(routes.HealthCheckRoute())
+	srv.AddRoutes(routes.Routes(metadata)...)
 	srv.AddRoutes(rest.Routes(svc)...)
 	mustNoError(srv.ListenAndServe())
 }

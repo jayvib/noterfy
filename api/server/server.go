@@ -7,7 +7,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"net/http"
 	"noterfy/api"
-	"noterfy/api/server/meta"
+	"noterfy/api/server/routes"
 	"os"
 	"os/signal"
 	"syscall"
@@ -44,7 +44,7 @@ type Config struct {
 	// shutdown. Default is 5 seconds.
 	ShutdownTimeout time.Duration
 	// Metadata is the API extra information.
-	Metadata *meta.Metadata
+	Metadata *routes.Metadata
 }
 
 func (c *Config) checkDefaults() {
@@ -63,7 +63,7 @@ type Server struct {
 	// ShutdownTimeout is at the duration to wait before abandoning the server's
 	// shutdown. Default is 5 seconds.
 	ShutdownTimeout time.Duration
-	Metadata        *meta.Metadata
+	Metadata        *routes.Metadata
 }
 
 func (s *Server) init() {
@@ -71,8 +71,8 @@ func (s *Server) init() {
 
 	s.printInfo()
 
-	for _, routes := range s.HTTPRoutes {
-		router.Path(routes.Path()).Methods(routes.Method()).Handler(routes.Handler())
+	for _, r := range s.HTTPRoutes {
+		router.Path(r.Path()).Methods(r.Method()).Handler(r.Handler())
 	}
 
 	for _, mw := range s.Middlewares {
