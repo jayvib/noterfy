@@ -118,7 +118,7 @@ endif
 	@docker build \
 		-t ${APP_NAME} \
 		--build-arg NOTERFY_BUILD_COMMIT=${GIT_COMMIT} \
-		--build-arg NOTERFY_VERSION=${NOTERFY_VERSION}
+		--build-arg NOTERFY_VERSION=${NOTERFY_VERSION} \
 		-f ./build/noterfy/docker/Dockerfile \
 		.
 	@docker tag ${APP_NAME} jayvib/${APP_NAME}:latest
