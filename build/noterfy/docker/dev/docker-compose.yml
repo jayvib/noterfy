@@ -10,7 +10,7 @@ services:
       dockerfile: build/noterfy/docker/Dockerfile
       labels:
         com.noterfy.description: "The applications backend engine"
-        com.noterfy.stage: "development"
+        com.noterfy.env: "development"
       args:
         NOTERFY_BUILD_COMMIT: development
         NOTERFY_VERSION: development
