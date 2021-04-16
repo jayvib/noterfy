@@ -1,7 +1,6 @@
 package noteutil
 
 import (
-	"github.com/sirupsen/logrus"
 	"noterfy/note"
 	"sort"
 )
@@ -10,17 +9,28 @@ import (
 func Sort(notes []*note.Note, sortBy note.SortBy, ascending bool) {
 	switch sortBy {
 	case note.SortByID:
-		sort.Sort(note.SortByIDSorter(notes))
+		if ascending {
+			sort.Sort(note.SortByIDSorter(notes))
+		} else {
+			sort.Sort(note.SortByIDDescendingSorter(notes))
+		}
 	case note.SortByTitle:
-		logrus.Debug("sort by title")
 		if ascending {
 			sort.Sort(note.SortByTitleSorter(notes))
 		} else {
-			sort.Sort(note.SortByTitleDescendSorter(notes))
+			sort.Sort(note.SortByTitleDescendingSorter(notes))
 		}
 	case note.SortByCreatedTime:
-		sort.Sort(note.SortByCreatedDateSorter(notes))
+		if ascending {
+			sort.Sort(note.SortByCreatedDateSorter(notes))
+		} else {
+			sort.Sort(note.SortByCreatedDateDescendingSorter(notes))
+		}
 	default:
-		sort.Sort(note.SortByIDSorter(notes))
+		if ascending {
+			sort.Sort(note.SortByIDSorter(notes))
+		} else {
+			sort.Sort(note.SortByIDDescendingSorter(notes))
+		}
 	}
 }
