@@ -1,0 +1,6 @@
+
+# ⛔⛔️⛔Use for running the server in localhost.
+
+store:
+  file:
+    path: .

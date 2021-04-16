@@ -1,4 +1,4 @@
-version: "3.5"
+version: "3.8"
 
 services:
   noterfy-engine:
@@ -9,16 +9,35 @@ services:
     networks:
       - noterfy-backend
     volumes:
-      - type: bind
-        source: ./config.yaml
-        target: /etc/noterfy/config.yaml
       - type: volume
         source: noterfy-volume
         target: /etc/noterfy/data
+    secrets:
+      - source: noterfy-secret
+        target: config.yaml
+    env_file:
+      - ./noterfy.env
+    deploy:
+      replicas: 10
+      update_config:
+        parallelism: 2
+        failure_action: rollback
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      placement:
+        constraints:
+          - 'node.role == worker'
 
 networks:
   noterfy-backend:
 
 volumes:
   noterfy-volume:
+
+secrets:
+  noterfy-secret:
+    file: ./config.yaml
 

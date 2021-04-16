@@ -10,7 +10,10 @@ services:
       dockerfile: build/noterfy/docker/Dockerfile
       labels:
         com.noterfy.description: "The applications backend engine"
-        com.noterfy.stage: "Development"
+        com.noterfy.env: "development"
+      args:
+        NOTERFY_BUILD_COMMIT: development
+        NOTERFY_VERSION: development
     ports:
       - "50001:50001"
     networks:
@@ -20,16 +23,16 @@ services:
         source: noterfy-volume
         target: /etc/noterfy/data
     secrets:
-      - config.yaml
+      - source: noterfy-secret
+        target: config.yaml
     env_file:
       - ./noterfy.env
     healthcheck:
-      disable: true # Need to be implemented
-#      test: ["CMD", "curl", "-f", "http://localhost:50001/health"]
-#      interval: 5m
-#      timeout: 10s
-#      retries: 3
-#      start_period: 40s
+      test: ["CMD", "curl", "-f", "http://localhost:50001/health"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
 networks:
   noterfy-backend:
@@ -38,7 +41,6 @@ volumes:
   noterfy-volume:
 
 secrets:  # Use for stack. But for development will just use the volume bind
-  config.yaml:
+  noterfy-secret:
     file: ./config.yaml
-    name: noterfy-secret
 

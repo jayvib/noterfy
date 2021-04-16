@@ -5,7 +5,7 @@ import (
 	"noterfy/api"
 	"noterfy/api/middleware"
 	"noterfy/api/server"
-	"noterfy/api/server/meta"
+	"noterfy/api/server/routes"
 	"noterfy/config"
 	"noterfy/note/api/v1/transport/rest"
 	noteservice "noterfy/note/service"
@@ -32,26 +32,32 @@ func main() {
 
 	conf := config.New()
 
+	metadata := &routes.Metadata{
+		Version:     Version,
+		BuildCommit: BuildCommit,
+		BuildDate:   BuildDate,
+	}
+
 	file, err := os.OpenFile(filepath.Join(conf.Store.File.Path, dbFileName), os.O_CREATE|os.O_RDWR, 0666)
 	mustNoError(err)
 	defer func() { _ = file.Close() }()
 
 	svc := noteservice.New(filestore.New(file))
 	srv := server.New(&server.Config{
-		Port: conf.Server.Port,
+		Port:     conf.Server.Port,
+		Metadata: metadata,
 		Middlewares: []api.NamedMiddleware{
 			middleware.NewLoggingMiddleware(),
+			middleware.NewRateLimitMiddleware(middleware.RateLimitConfig{
+				DefaultExpirationTTL: time.Second,
+				ExpireJobInterval:    time.Second,
+				MaxBurst:             1,
+			}),
 		},
 	})
 
-	srv.AddRoutes(meta.Routes(&meta.Metadata{
-		Version:     Version,
-		BuildCommit: BuildCommit,
-		BuildDate:   BuildDate,
-	})...)
+	srv.AddRoutes(routes.Routes(metadata)...)
 	srv.AddRoutes(rest.Routes(svc)...)
-
-	defer srv.Close()
 	mustNoError(srv.ListenAndServe())
 }
 

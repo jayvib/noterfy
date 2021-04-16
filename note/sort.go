@@ -5,8 +5,6 @@ import (
 	"strings"
 )
 
-// ❎ TODO: Create testing for each sorter.
-
 // GetSortBy parses s and get the equivalent value of SortBy type.
 func GetSortBy(s string) SortBy {
 	lowerValue := strings.ToLower(s)
@@ -39,6 +37,23 @@ func (n SortByIDSorter) Swap(i, j int) {
 	n[i], n[j] = n[j], n[i]
 }
 
+// SortByIDDescendingSorter implements sort.Interface which
+// sort the note by its ID in descending order.
+type SortByIDDescendingSorter []*Note
+
+// Len returns the length of notes.
+func (n SortByIDDescendingSorter) Len() int { return len(n) }
+
+// Less compare the adjacent IDs of the note.
+func (n SortByIDDescendingSorter) Less(i, j int) bool {
+	return bytes.Compare(n[i].ID[:], n[j].ID[:]) > 0
+}
+
+// Swap swaps the note i, and note j.
+func (n SortByIDDescendingSorter) Swap(i, j int) {
+	n[i], n[j] = n[j], n[i]
+}
+
 // SortByTitleSorter implements sort.Interface which
 // sort the note by title.
 type SortByTitleSorter []*Note
@@ -56,6 +71,23 @@ func (n SortByTitleSorter) Swap(i, j int) {
 	n[i], n[j] = n[j], n[i]
 }
 
+// SortByTitleDescendingSorter implements sort.Interface which
+// sort the note by title in descending order.
+type SortByTitleDescendingSorter []*Note
+
+// Len returns the length of notes.
+func (n SortByTitleDescendingSorter) Len() int { return len(n) }
+
+// Less compare the adjacent IDs of the note.
+func (n SortByTitleDescendingSorter) Less(i, j int) bool {
+	return n[i].GetTitle() > n[j].GetTitle()
+}
+
+// Swap swaps the note i, and note j.
+func (n SortByTitleDescendingSorter) Swap(i, j int) {
+	n[i], n[j] = n[j], n[i]
+}
+
 // SortByCreatedDateSorter implements sort.Interface which
 // sort the note by created date.
 type SortByCreatedDateSorter []*Note
@@ -70,5 +102,22 @@ func (n SortByCreatedDateSorter) Less(i, j int) bool {
 
 // Swap swaps the note i, and note j.
 func (n SortByCreatedDateSorter) Swap(i, j int) {
+	n[i], n[j] = n[j], n[i]
+}
+
+// SortByCreatedDateDescendingSorter implements sort.Interface which
+// sort the note by created date in descending order.
+type SortByCreatedDateDescendingSorter []*Note
+
+// Len returns the length of notes.
+func (n SortByCreatedDateDescendingSorter) Len() int { return len(n) }
+
+// Less compare the adjacent IDs of the note.
+func (n SortByCreatedDateDescendingSorter) Less(i, j int) bool {
+	return n[i].GetCreatedTime().After(n[j].GetCreatedTime())
+}
+
+// Swap swaps the note i, and note j.
+func (n SortByCreatedDateDescendingSorter) Swap(i, j int) {
 	n[i], n[j] = n[j], n[i]
 }

@@ -1,16 +1,22 @@
 package rest
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
+	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 	"net/http"
 	"net/http/httptest"
 	"noterfy/note"
+	"noterfy/note/noteutil"
 	"noterfy/note/service"
 	"noterfy/note/store/memory"
 	"noterfy/pkg/ptrconv"
+	"noterfy/pkg/timestamp"
 	"testing"
 )
 
@@ -44,6 +50,10 @@ type HandlerTestSuite struct {
 }
 
 func (s *HandlerTestSuite) SetupTest() {
+	s.resetStore()
+}
+
+func (s *HandlerTestSuite) resetStore() {
 	s.store = memory.New()
 	s.svc = service.New(s.store)
 	s.routes = makeHandler(s.svc)
@@ -63,4 +73,306 @@ func (s *HandlerTestSuite) assertMessage(resp response, want string) {
 
 func (s *HandlerTestSuite) assertStatusCode(rec *httptest.ResponseRecorder, want int) {
 	s.Equal(want, rec.Code)
+}
+
+func (s *HandlerTestSuite) TestCreate() {
+
+	newNote := noteutil.Copy(dummyNote)
+
+	makeRequest := func(ctx context.Context, n *note.Note) *httptest.ResponseRecorder {
+		responseRecorder := httptest.NewRecorder()
+		var body bytes.Buffer
+		err := json.NewEncoder(&body).Encode(&request{Note: n})
+		s.require.NoError(err)
+		req := httptest.NewRequest(http.MethodPost, "/note", &body)
+		req = req.WithContext(ctx)
+		s.routes.ServeHTTP(responseRecorder, req)
+		return responseRecorder
+	}
+
+	assertNote := func(want, got *note.Note) {
+		s.NotNil(got)
+		s.NotEqual(uuid.Nil, got.ID)
+		s.NotEmpty(got.CreatedTime)
+		got.ID = uuid.Nil
+		got.CreatedTime = nil
+		s.Equal(want, got)
+	}
+
+	s.Run("Requesting a create note successfully", func() {
+		want := noteutil.Copy(newNote)
+		want.ID = uuid.Nil
+
+		responseRecorder := makeRequest(dummyCtx, newNote)
+		s.assertStatusCode(responseRecorder, http.StatusOK)
+		resp := s.decodeResponse(responseRecorder)
+		assertNote(want, resp.Note)
+	})
+
+	s.Run("Requesting a create note but the ID is already existing should return an error", func() {
+		// TODO: When there's an ID in the note decide if the service need to
+		// remove the id.
+		inputNote := noteutil.Copy(newNote)
+		newNote, err := s.svc.Create(dummyCtx, inputNote)
+		s.require.NoError(err)
+
+		responseRecorder := makeRequest(dummyCtx, newNote)
+		s.assertStatusCode(responseRecorder, http.StatusConflict)
+		resp := s.decodeResponse(responseRecorder)
+		s.assertMessage(resp, "Note already exists")
+	})
+
+	s.Run("Cancelled request should return an error", func() {
+		inputNote := noteutil.Copy(newNote)
+		cancelledCtx, cancel := context.WithCancel(dummyCtx)
+		cancel()
+		responseRecorder := makeRequest(cancelledCtx, inputNote)
+		s.assertStatusCode(responseRecorder, StatusClientClosed)
+		resp := s.decodeResponse(responseRecorder)
+		s.assertMessage(resp, "Request cancelled")
+	})
+}
+
+func (s *HandlerTestSuite) TestDelete() {
+
+	setup := func() *note.Note {
+		newNote, err := s.svc.Create(dummyCtx, noteutil.Copy(dummyNote))
+		s.require.NoError(err)
+		return newNote
+	}
+
+	makeRequest := func(ctx context.Context, id uuid.UUID) *httptest.ResponseRecorder {
+		responseRecorder := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodDelete, "/note/"+id.String(), nil)
+		req = req.WithContext(ctx)
+		s.routes.ServeHTTP(responseRecorder, req)
+		return responseRecorder
+	}
+
+	s.Run("Requesting a delete note successfully", func() {
+		newNote := setup()
+		responseRecorder := makeRequest(dummyCtx, newNote.ID)
+		s.assertStatusCode(responseRecorder, http.StatusOK)
+	})
+
+	s.Run("Requesting a note but the ID is nil", func() {
+		responseRecorder := makeRequest(dummyCtx, uuid.Nil)
+		s.Equal(http.StatusBadRequest, responseRecorder.Code)
+		got := s.decodeResponse(responseRecorder)
+		want := "Empty note identifier"
+		s.assertMessage(got, want)
+	})
+
+	s.Run("Cancelled request should return an error", func() {
+		newNote := setup()
+		cancelledCtx, cancel := context.WithCancel(dummyCtx)
+		cancel()
+		responseRecorder := makeRequest(cancelledCtx, newNote.ID)
+		s.assertStatusCode(responseRecorder, StatusClientClosed)
+		resp := s.decodeResponse(responseRecorder)
+		s.assertMessage(resp, "Request cancelled")
+	})
+}
+
+func (s *HandlerTestSuite) TestFetch() {
+	insertNotes := func(size int) (notes []*note.Note) {
+		for i := size; i > 0; i-- {
+			n := new(note.Note)
+
+			n.SetTitle(fmt.Sprintf("Title %d", i)).
+				SetContent(fmt.Sprintf("Content %d", i)).
+				SetIsFavorite(true)
+
+			newNote, err := s.svc.Create(dummyCtx, n)
+			s.require.NoError(err)
+			notes = append(notes, newNote)
+		}
+		return
+	}
+
+	type response struct {
+		Notes      []*note.Note `json:"notes"`
+		TotalCount uint64       `json:"total_count"`
+		TotalPage  uint64       `json:"total_page"`
+	}
+
+	doRequest := func(target string) response {
+		// Do a fetch request
+		rec := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodGet, target, nil)
+
+		s.routes.ServeHTTP(rec, req)
+		s.require.Equal(http.StatusOK, rec.Code)
+
+		// Assert
+		var resp response
+
+		err := json.NewDecoder(rec.Body).Decode(&resp)
+		s.require.NoError(err)
+		return resp
+	}
+
+	s.Run("Fetch successfully", func() {
+		s.resetStore()
+		// Insert notes
+		size := 20
+		insertNotes(size)
+
+		// Do a fetch request
+		resp := doRequest("/notes?page=1&size=5")
+
+		s.Len(resp.Notes, 5)
+		s.Equal(uint64(size), resp.TotalCount)
+		s.Equal(uint64(4), resp.TotalPage)
+	})
+
+	s.Run("Fetch with sorted by", func() {
+		s.resetStore()
+		notes := insertNotes(3)
+		wantNotes := []*note.Note{
+			notes[2],
+			notes[1],
+			notes[0],
+		}
+
+		resp := doRequest("/notes?page=1&size=5&sorted_by=title")
+		s.Len(resp.Notes, 3)
+		s.Equal(wantNotes, resp.Notes)
+	})
+
+	s.Run("Fetch with sorted by title descending", func() {
+		s.resetStore()
+		notes := insertNotes(3)
+		resp := doRequest("/notes?page=1&size=5&sorted_by=title&ascending=false")
+		s.Len(resp.Notes, 3)
+		s.Equal(notes, resp.Notes)
+	})
+}
+
+func (s *HandlerTestSuite) TestGet() {
+
+	makeRequest := func(ctx context.Context, id uuid.UUID) *httptest.ResponseRecorder {
+		responseRecorder := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodGet, "/note/"+id.String(), nil)
+		req = req.WithContext(ctx)
+		s.routes.ServeHTTP(responseRecorder, req)
+		return responseRecorder
+	}
+
+	setupNewNote := func() *note.Note {
+		testNote := noteutil.Copy(dummyNote)
+		newNote, err := s.svc.Create(dummyCtx, testNote)
+		s.require.NoError(err)
+		return newNote
+	}
+
+	s.Run("Requesting a note successfully", func() {
+		testNote := setupNewNote()
+
+		responseRecorder := makeRequest(dummyCtx, testNote.ID)
+		s.Equal(http.StatusOK, responseRecorder.Code)
+
+		want := &note.Note{
+			ID:          testNote.ID,
+			Title:       testNote.Title,
+			Content:     testNote.Content,
+			CreatedTime: timestamp.GenerateTimestamp(),
+			IsFavorite:  testNote.IsFavorite,
+		}
+
+		got := s.decodeResponse(responseRecorder)
+
+		s.Equal(want, got.Note)
+	})
+
+	s.Run("Requesting a note that not exists", func() {
+		responseRecorder := makeRequest(dummyCtx, uuid.New())
+		s.assertStatusCode(responseRecorder, http.StatusNotFound)
+		got := s.decodeResponse(responseRecorder)
+		want := "Note not found"
+		s.assertMessage(got, want)
+	})
+
+	s.Run("Requesting a note but the ID is nil", func() {
+		responseRecorder := makeRequest(dummyCtx, uuid.Nil)
+		s.assertStatusCode(responseRecorder, http.StatusBadRequest)
+		got := s.decodeResponse(responseRecorder)
+		want := "Empty note identifier"
+		s.assertMessage(got, want)
+	})
+
+	s.Run("Cancelled request should return an error", func() {
+		inputNote := setupNewNote()
+		cancelledCtx, cancel := context.WithCancel(dummyCtx)
+		cancel()
+		responseRecorder := makeRequest(cancelledCtx, inputNote.ID)
+		s.assertStatusCode(responseRecorder, StatusClientClosed)
+		resp := s.decodeResponse(responseRecorder)
+		s.assertMessage(resp, "Request cancelled")
+	})
+}
+
+func (s *HandlerTestSuite) TestUpdate() {
+
+	newNote := noteutil.Copy(dummyNote)
+
+	setup := func() *note.Note {
+		newNote, err := s.svc.Create(dummyCtx, noteutil.Copy(newNote))
+		s.require.NoError(err)
+		s.require.NotNil(newNote)
+		s.require.NotEqual(uuid.Nil, newNote.ID)
+		return newNote
+	}
+
+	makeRequest := func(ctx context.Context, n *note.Note) *httptest.ResponseRecorder {
+		responseRecorder := httptest.NewRecorder()
+		var body bytes.Buffer
+		err := json.NewEncoder(&body).Encode(&request{Note: n})
+		s.require.NoError(err)
+		req := httptest.NewRequest(http.MethodPut, "/note", &body)
+		req = req.WithContext(ctx)
+		s.routes.ServeHTTP(responseRecorder, req)
+		return responseRecorder
+	}
+
+	assertNote := func(want, got *note.Note) {
+		s.Equal(want, got)
+	}
+
+	s.Run("Request for update successfully", func() {
+
+		// Update the note via request
+		updatedNote := noteutil.Copy(setup())
+		updatedNote.Title = ptrconv.StringPointer("Updated Title")
+
+		want := noteutil.Copy(updatedNote)
+		want.UpdatedTime = timestamp.GenerateTimestamp()
+
+		responseRecorder := makeRequest(dummyCtx, updatedNote)
+		s.assertStatusCode(responseRecorder, http.StatusOK)
+		resp := s.decodeResponse(responseRecorder)
+		assertNote(want, resp.Note)
+	})
+
+	s.Run("Request for update note that is not exist should return an error", func() {
+		updatedNote := noteutil.Copy(dummyNote)
+		updatedNote.ID = uuid.New()
+		responseRecorder := makeRequest(dummyCtx, updatedNote)
+		s.assertStatusCode(responseRecorder, http.StatusNotFound)
+		resp := s.decodeResponse(responseRecorder)
+		s.assertMessage(resp, "Note not found")
+	})
+
+	s.Run("Cancelled request should return an error", func() {
+		logrus.SetLevel(logrus.DebugLevel)
+		updatedNote := noteutil.Copy(setup())
+		updatedNote.Title = ptrconv.StringPointer("Updated Title")
+
+		cancelledCtx, cancel := context.WithCancel(dummyCtx)
+		cancel()
+		responseRecorder := makeRequest(cancelledCtx, updatedNote)
+		s.assertStatusCode(responseRecorder, StatusClientClosed)
+		resp := s.decodeResponse(responseRecorder)
+		s.assertMessage(resp, "Request cancelled")
+	})
 }

@@ -212,9 +212,10 @@ func (s *TestSuite) TestFetch() {
 		notes := setup(20)
 
 		paginationSetting := &note.Pagination{
-			Size:   20,
-			Page:   1,
-			SortBy: note.SortByTitle,
+			Size:      20,
+			Page:      1,
+			SortBy:    note.SortByTitle,
+			Ascending: true,
 		}
 
 		// Pre-fetch just to get the total number of pages.
@@ -248,10 +249,10 @@ func (s *TestSuite) TestFetch() {
 		cancel()
 
 		_, err := s.store.Fetch(ctx, &note.Pagination{
-			Size:   5,
-			Page:   2,
-			SortBy: note.SortByTitle,
-			Ascend: false,
+			Size:      5,
+			Page:      2,
+			SortBy:    note.SortByTitle,
+			Ascending: false,
 		})
 
 		s.Error(err)
