@@ -9,6 +9,7 @@ import (
 	"github.com/gorilla/mux"
 	"net/http"
 	"noterfy/note"
+	"strconv"
 )
 
 // @title Noterfy Note Service
@@ -183,13 +184,23 @@ func decodeFetchRequest(_ context.Context, r *http.Request) (response interface{
 	page := r.URL.Query().Get("page")
 	size := r.URL.Query().Get("size")
 	sortBy := r.URL.Query().Get("sort_by")
+	ascendRaw := r.URL.Query().Get("ascending")
+	if ascendRaw == "" {
+		// Default will be ascend=true
+		ascendRaw = "true"
+	}
+
+	ascend, err := strconv.ParseBool(ascendRaw)
+	if err != nil {
+		ascend = true
+	}
 
 	response = FetchRequest{
 		Pagination: &note.Pagination{
-			Size:   convertAtoU(size),
-			Page:   convertAtoU(page),
-			SortBy: note.GetSortBy(sortBy),
-			Ascend: false,
+			Size:      convertAtoU(size),
+			Page:      convertAtoU(page),
+			SortBy:    note.GetSortBy(sortBy),
+			Ascending: ascend,
 		},
 	}
 

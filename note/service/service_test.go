@@ -228,10 +228,10 @@ func (s *TestSuite) TestFetch() {
 		sort.Sort(note.SortByTitleSorter(notes))
 
 		pagination := &note.Pagination{
-			Size:   20,
-			Page:   1,
-			SortBy: "title",
-			Ascend: false,
+			Size:      20,
+			Page:      1,
+			SortBy:    "title",
+			Ascending: true,
 		}
 		iter, err := s.svc.Fetch(dummyCtx, pagination)
 		s.Require().NoError(err)

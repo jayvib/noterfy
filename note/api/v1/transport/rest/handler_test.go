@@ -50,6 +50,10 @@ type HandlerTestSuite struct {
 }
 
 func (s *HandlerTestSuite) SetupTest() {
+	s.resetStore()
+}
+
+func (s *HandlerTestSuite) resetStore() {
 	s.store = memory.New()
 	s.svc = service.New(s.store)
 	s.routes = makeHandler(s.svc)
@@ -174,39 +178,77 @@ func (s *HandlerTestSuite) TestFetch() {
 	// TODO: Test the ascend option.
 	// TODO: Test the sort by ID.
 	// TODO: Test the sort by created date.
-	s.Run("Fetch successfully", func() {
-		// Insert notes
-		for i := 0; i < 20; i++ {
+	insertNotes := func(size int) (notes []*note.Note) {
+		for i := size; i > 0; i-- {
 			n := new(note.Note)
 
 			n.SetTitle(fmt.Sprintf("Title %d", i)).
 				SetContent(fmt.Sprintf("Content %d", i)).
 				SetIsFavorite(true)
 
-			_, err := s.svc.Create(dummyCtx, n)
+			newNote, err := s.svc.Create(dummyCtx, n)
 			s.require.NoError(err)
+			notes = append(notes, newNote)
 		}
+		return
+	}
 
+	type response struct {
+		Notes      []*note.Note `json:"notes"`
+		TotalCount uint64       `json:"total_count"`
+		TotalPage  uint64       `json:"total_page"`
+	}
+
+	doRequest := func(target string) response {
 		// Do a fetch request
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodGet, "/notes?page=1&size=5", nil)
+		req := httptest.NewRequest(http.MethodGet, target, nil)
 
 		s.routes.ServeHTTP(rec, req)
 		s.require.Equal(http.StatusOK, rec.Code)
 
 		// Assert
-		var resp struct {
-			Notes      []*note.Note `json:"notes"`
-			TotalCount uint64       `json:"total_count"`
-			TotalPage  uint64       `json:"total_page"`
-		}
+		var resp response
 
 		err := json.NewDecoder(rec.Body).Decode(&resp)
 		s.require.NoError(err)
+		return resp
+	}
+
+	s.Run("Fetch successfully", func() {
+		s.resetStore()
+		// Insert notes
+		size := 20
+		insertNotes(size)
+
+		// Do a fetch request
+		resp := doRequest("/notes?page=1&size=5")
 
 		s.Len(resp.Notes, 5)
-		s.Equal(uint64(20), resp.TotalCount)
+		s.Equal(uint64(size), resp.TotalCount)
 		s.Equal(uint64(4), resp.TotalPage)
+	})
+
+	s.Run("Fetch with sorted by", func() {
+		s.resetStore()
+		notes := insertNotes(3)
+		wantNotes := []*note.Note{
+			notes[2],
+			notes[1],
+			notes[0],
+		}
+
+		resp := doRequest("/notes?page=1&size=5&sorted_by=title")
+		s.Len(resp.Notes, 3)
+		s.Equal(wantNotes, resp.Notes)
+	})
+
+	s.Run("Fetch with sorted by title descending", func() {
+		s.resetStore()
+		notes := insertNotes(3)
+		resp := doRequest("/notes?page=1&size=5&sorted_by=title&ascending=false")
+		s.Len(resp.Notes, 3)
+		s.Equal(notes, resp.Notes)
 	})
 }
 

@@ -59,12 +59,20 @@ func (s *Store) Fetch(ctx context.Context, p *note.Pagination) (note.Iterator, e
 			notes = append(notes, n)
 		}
 
+		logrus.Debugf("%#v\n", p)
+
 		// Sort by ID
 		switch p.SortBy {
 		case note.SortByID:
 			sort.Sort(note.SortByIDSorter(notes))
 		case note.SortByTitle:
-			sort.Sort(note.SortByTitleSorter(notes))
+			logrus.Debug("sort by title")
+			if p.Ascending {
+				sort.Sort(note.SortByTitleSorter(notes))
+			} else {
+				logrus.Debug("Sort by title descending")
+				sort.Sort(note.SortByTitleDescendSorter(notes))
+			}
 		case note.SortByCreatedTime:
 			sort.Sort(note.SortByCreatedDateSorter(notes))
 		default:

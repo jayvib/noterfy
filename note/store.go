@@ -63,9 +63,9 @@ type Pagination struct {
 	// SortBy is a type of sort to be use during the pagination.
 	// If SortBy is empty string the default will be SortByTitle.
 	SortBy SortBy `json:"sortBy,omitempty"`
-	// Ascend indicates that the pagination is ascend.
+	// Ascending indicates that the pagination is ascend.
 	// Default is true.
-	Ascend bool `json:"ascend,omitempty"`
+	Ascending bool `json:"ascending,omitempty"`
 }
 
 // Check checks the value of each pagination field and set default

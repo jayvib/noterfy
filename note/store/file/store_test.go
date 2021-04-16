@@ -90,10 +90,10 @@ func (s *FileStoreTestSuite) TestLoadNotesFromTheFile() {
 		store, closerFn := setup(size)
 		defer closerFn()
 		iter, err := store.Fetch(dummyCtx, &note.Pagination{
-			Size:   uint64(size),
-			Page:   1,
-			SortBy: "title",
-			Ascend: false,
+			Size:      uint64(size),
+			Page:      1,
+			SortBy:    "title",
+			Ascending: false,
 		})
 		s.Require().NoError(err)
 

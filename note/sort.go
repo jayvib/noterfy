@@ -54,6 +54,23 @@ func (n SortByTitleSorter) Swap(i, j int) {
 	n[i], n[j] = n[j], n[i]
 }
 
+// SortByTitleDescendSorter implements sort.Interface which
+// sort the note by title in descending order.
+type SortByTitleDescendSorter []*Note
+
+// Len returns the length of notes.
+func (n SortByTitleDescendSorter) Len() int { return len(n) }
+
+// Less compare the adjacent IDs of the note.
+func (n SortByTitleDescendSorter) Less(i, j int) bool {
+	return n[i].GetTitle() > n[j].GetTitle()
+}
+
+// Swap swaps the note i, and note j.
+func (n SortByTitleDescendSorter) Swap(i, j int) {
+	n[i], n[j] = n[j], n[i]
+}
+
 // SortByCreatedDateSorter implements sort.Interface which
 // sort the note by created date.
 type SortByCreatedDateSorter []*Note
