@@ -6,7 +6,6 @@ import (
 	"github.com/sirupsen/logrus"
 	"noterfy/note"
 	"noterfy/note/noteutil"
-	"sort"
 	"sync"
 )
 
@@ -59,26 +58,7 @@ func (s *Store) Fetch(ctx context.Context, p *note.Pagination) (note.Iterator, e
 			notes = append(notes, n)
 		}
 
-		logrus.Debugf("%#v\n", p)
-
-		// Sort by ID
-		switch p.SortBy {
-		case note.SortByID:
-			sort.Sort(note.SortByIDSorter(notes))
-		case note.SortByTitle:
-			logrus.Debug("sort by title")
-			if p.Ascending {
-				sort.Sort(note.SortByTitleSorter(notes))
-			} else {
-				logrus.Debug("Sort by title descending")
-				sort.Sort(note.SortByTitleDescendSorter(notes))
-			}
-		case note.SortByCreatedTime:
-			sort.Sort(note.SortByCreatedDateSorter(notes))
-		default:
-			sort.Sort(note.SortByIDSorter(notes))
-		}
-
+		noteutil.Sort(notes, p.SortBy, p.Ascending)
 		if noteSize := uint64(len(notes)); stop > noteSize {
 			stop = noteSize
 		}

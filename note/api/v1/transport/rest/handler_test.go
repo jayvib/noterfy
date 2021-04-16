@@ -175,9 +175,6 @@ func (s *HandlerTestSuite) TestDelete() {
 }
 
 func (s *HandlerTestSuite) TestFetch() {
-	// TODO: Test the ascend option.
-	// TODO: Test the sort by ID.
-	// TODO: Test the sort by created date.
 	insertNotes := func(size int) (notes []*note.Note) {
 		for i := size; i > 0; i-- {
 			n := new(note.Note)
