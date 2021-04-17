@@ -91,7 +91,7 @@ ifdef NOTERFY_VERSION
 	@echo "👉 Noterfy Version: ${NOTERFY_VERSION}"
 endif
 ifeq ($(wildcard ./bin/.*),)
-	@echo "🛠 📂 Creating bin directory"
+	@echo "📂 Creating bin directory"
 	@mkdir ./bin
 endif
 	@echo "🛠 Building Noterfy"

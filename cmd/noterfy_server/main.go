@@ -53,6 +53,7 @@ func main() {
 				ExpireJobInterval:    time.Second,
 				MaxBurst:             1,
 			}),
+			middleware.NewCORSMiddleware(nil),
 		},
 	})
 
