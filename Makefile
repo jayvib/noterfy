@@ -35,22 +35,11 @@ local-server: build-noterfy
 define START_DEV_SERVICES_HELP_INFO
 # Use to spin the development services
 # including the noterfy dependencies.
-# by default when the image is not yet exists
-# this will build the Docker image of the engine.
-# When you want to force build the image despite of
-# the image is already existing use:
-#      DOCKER_IMAGE_BUILD_FLAG=force
-#
 # Example:
 # 	make start-dev-services
-#   make start-dev-services DOCKER_IMAGE_BUILD_FLAG=force
 endef
 .PHONY: start-dev-services
 start-dev-services:
-ifeq ($(DOCKER_IMAGE_BUILD_FLAG), force)
-	@echo "👉 Forcing the Docker to build the image"
-	cd ./build/noterfy/docker/dev && docker-compose build
-endif
 	@echo "👉 Starting the services"
 	@cd ./build/noterfy/docker/dev && \
 	 	docker-compose up -d && \

@@ -4,35 +4,25 @@ version: "3.5"
 
 services:
   noterfy-engine:
-    image: noterfy:dev
-    build:
-      context: ../../../../
-      dockerfile: build/noterfy/docker/Dockerfile
-      labels:
-        com.noterfy.description: "The applications backend engine"
-        com.noterfy.env: "development"
-      args:
-        NOTERFY_BUILD_COMMIT: development
-        NOTERFY_VERSION: development
+    image: golang:1.16.3-alpine3.13
     ports:
       - "50001:50001"
-    networks:
-      - noterfy-backend
     volumes:
       - type: volume
         source: noterfy-volume
         target: /etc/noterfy/data
+      - type: bind
+        source: ../../../../
+        target: /home/noterfy
+    networks:
+      - noterfy-backend
     secrets:
       - source: noterfy-secret
         target: config.yaml
     env_file:
-      - ./noterfy.env
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:50001/health"]
-      interval: 1m
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+      - noterfy.env
+    working_dir: "/home/noterfy"
+    command: ["go", "run", "cmd/noterfy_server/main.go"]
 
 networks:
   noterfy-backend:
@@ -44,3 +34,33 @@ secrets:  # Use for stack. But for development will just use the volume bind
   noterfy-secret:
     file: ./config.yaml
 
+#  noterfy-engine:
+#    image: noterfy:dev
+#    build:
+#      context: ../../../../
+#      dockerfile: build/noterfy/docker/Dockerfile
+#      labels:
+#        com.noterfy.description: "The applications backend engine"
+#        com.noterfy.env: "development"
+#      args:
+#        NOTERFY_BUILD_COMMIT: development
+#        NOTERFY_VERSION: development
+#    ports:
+#      - "50001:50001"
+#    networks:
+#      - noterfy-backend
+#    volumes:
+#      - type: volume
+#        source: noterfy-volume
+#        target: /etc/noterfy/data
+#    secrets:
+#      - source: noterfy-secret
+#        target: config.yaml
+#    env_file:
+#      - ./noterfy.env
+#    healthcheck:
+#      test: ["CMD", "curl", "-f", "http://localhost:50001/health"]
+#      interval: 1m
+#      timeout: 10s
+#      retries: 3
+#      start_period: 40s
