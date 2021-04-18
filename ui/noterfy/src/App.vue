@@ -9,30 +9,86 @@
       </div>
       <div
         class="note"
-        v-for="note in notes" :key="note.id"
-        @click="selectNote(note)">
+        v-for="note in sortedNotes" :key="note.id"
+        @click="selectNote(note)"
+        :class="{selected: note === selectedNote}"
+      >
+        <i class="icon material-icons" v-if="note.favorite">star</i>
         {{ note.title }}
       </div>
     </aside>
-    <section class="main">
-      <textarea v-model="selectedNote.content"></textarea>
-    </section>
-    <aside class="preview" v-html="notePreview"></aside>
+    <template v-if="selectedNote">
+      <section class="main">
+        <div class="toolbar">
+          <input v-model="selectedNote.title" placeholder="Note Title">
+          <button @click="favoriteNote" title="Favorite note">
+            <i class="material-icons">{{ selectedNote.favorite ? 'star' : 'star_border' }}</i>
+          </button>
+          <button @click="removeNote" title="Remove note">
+            <i class="material-icons">delete</i>
+          </button>
+        </div>
+        <textarea v-model="selectedNote.content"></textarea>
+        <div class="toolbar status-bar">
+          <span class="date">
+            <span class="label">Created</span>
+            <span class="value">{{ selectedNote.created | date }}</span>
+          </span>
+          <span class="lines">
+            <span class="label">Lines</span>
+            <span class="value">{{ linesCount }}</span>
+          </span>
+          <span class="words">
+            <span class="label">Words</span>
+            <span class="value">{{ wordsCount }}</span>
+          </span>
+          <span class="characters">
+            <span class="label">Characters</span>
+            <span class="value">{{ charactersCount }}</span>
+          </span>
+        </div>
+      </section>
+      <aside class="preview" v-html="notePreview"></aside>
+    </template>
   </div>
 </template>
 
 <script>
-  import marked from 'marked'
-  export default {
+import marked from 'marked'
+
+export default {
     name: 'App',
     data() {
       return {
-        content: "Hello World",
         notes: [],
         selectedId: null,
       }
     },
     computed: {
+      linesCount() {
+        if (this.selectedNote) {
+          return this.selectedNote.content.replace(/\r\n|\r|\n/).length
+        }
+        return 0
+      },
+      wordsCount() {
+        if (this.selectedNote) {
+          let s = this.selectedNote.content
+          s = s.replace(/\n/g, ' ')
+          // Remove leading and trailing white-spaces
+          s = s.replace(/(^\s*)|(\s*$)/gi, '')
+          // Turn 2 or more duplicate white-spaces into 1
+          s = s.replace(/\s\s+/gi, ' ')
+          return s.split(' ').length
+        }
+        return 0
+      },
+      charactersCount() {
+        if (this.selectedNote) {
+          return this.selectedNote.content.split('').length
+        }
+        return 0
+      },
       notePreview() {
         return this.selectedNote ? marked(this.selectedNote.content) : ''
       },
@@ -40,16 +96,30 @@
         return `${this.notes.length} note(s) already`
       },
       selectedNote() {
-        const note = this.notes.find(
+        return this.notes.find(
           note => note.id === this.selectedId,
         )
-        return note ? note : { content: 'You can write in **markdown**'}
+      },
+      sortedNotes() {
+        return this.notes.slice()
+          .sort((a, b) => a.created - b.created)
+          .sort((a, b) => (a.favorite === b.favorite) ? 0
+            : a.favorite ? -1 : 1
+          )
       }
     },
     methods: {
-      saveNote() {
-        localStorage.setItem('content', this.content)
-        this.reportOperation('saving')
+      favoriteNote() {
+        this.selectedNote.favorite ^= true
+      },
+      removeNote() {
+        if (this.selectedNote && confirm('Delete the note?')) {
+          const index = this.notes.indexOf(this.selectedNote)
+          if (index !== -1) {
+            this.notes.splice(index, 1)
+          }
+        }
+        this.reportOperation("removeNote")
       },
       reportOperation(opName) {
         console.log(`The ${opName} operation was completed`)
@@ -67,19 +137,27 @@
           created: time,
           favorite: false,
         }
-
         this.notes.push(note)
+      },
+      saveNotes() {
+        localStorage.setItem('notes', JSON.stringify(this.notes))
+        console.log('Notes saved!', new Date())
       }
     },
     watch: {
-      content(val) {
-        this.saveNote(val)
+      notes: {
+        handler() {
+          this.saveNotes()
+        },
+        deep: true
+      },
+      selectedId(val) {
+        localStorage.setItem('selected-id', val)
       }
     },
     created() {
-      this.content =
-        localStorage.getItem('content')
-        || 'You can write in **markdown**'
+      this.notes = JSON.parse(localStorage.getItem('notes')) || []
+      this.selectedId = localStorage.getItem('selected-id') || null
     }
   }
 </script>
