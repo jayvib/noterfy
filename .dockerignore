@@ -1,1 +1,4 @@
 /bin
+/ui
+/.idea
+node_modules
