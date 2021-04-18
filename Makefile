@@ -9,19 +9,26 @@ export $(shell sed 's/=.*//' build/noterfy/build.env)
 APP_NAME:=noterfy
 GIT_COMMIT:=$(shell git rev-parse --short HEAD)
 
-define DOCKER_DEPLOY_DEV_HELP_INFO
-# Use to deploy the development stage services to Docker Swarm
-# mode.
+define DOCKER_DEPLOY_ALPHA_HELP_INFO
+# Use to deploy the alpha stage services to Docker Swarm
+# mode. When you want to force build the image despite of
+# the image existence use:
+# 	DOCKER_IMAGE_BUILD_FLAG=force
 #
 # Make sure that the Docker in swarm mode already otherwise Docker
 # will throw an error.
 #
 # Example:
-#		make docker-deploy-dev
+#		make docker-deploy-alpha
+#		make docker-deploy-alpha DOCKER_IMAGE_BUILD_FLAG=force
 endef
-.PHONY: docker-deploy-dev
-docker-deploy-dev:
-	docker stack deploy -c ./build/noterfy/docker/dev/docker-stack.yml $(APP_NAME)
+.PHONY: docker-deploy-alpha
+docker-deploy-alpha:
+ifeq ($(DOCKER_IMAGE_BUILD_FLAG), force)
+	@echo "👉 Forcing building the Docker Alpha Image"
+	@cd ./build/noterfy/docker/alpha && docker-compose build
+endif
+	docker stack deploy -c ./build/noterfy/docker/alpha/docker-stack.yml $(APP_NAME)
 
 define LOCAL_SERVER_HELP_INFO
 # Use to run noterfy server in local machine.

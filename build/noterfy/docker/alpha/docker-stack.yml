@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   noterfy-engine:
-    image: jayvib/noterfy:latest
+    image: jayvib/noterfy:alpha
     ports:
       - "50001:50001"
       - "443:443"
@@ -18,7 +18,7 @@ services:
     env_file:
       - ./noterfy.env
     deploy:
-      replicas: 10
+      replicas: 1
       update_config:
         parallelism: 2
         failure_action: rollback

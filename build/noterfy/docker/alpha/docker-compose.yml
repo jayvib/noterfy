@@ -4,7 +4,7 @@ version: "3.5"
 
 services:
   noterfy-engine:
-    image: noterfy:alpha
+    image: jayvib/noterfy:alpha
     build:
       context: ../../../../
       dockerfile: build/noterfy/docker/Dockerfile
