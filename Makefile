@@ -1,7 +1,5 @@
 #!make
 
-DOCKER_IMAGE_BUILD_FLAG="no-force"
-
 # Include the envfile that contains all the metadata about the app
 include build/noterfy/build.env
 export $(shell sed 's/=.*//' build/noterfy/build.env)
@@ -9,19 +7,21 @@ export $(shell sed 's/=.*//' build/noterfy/build.env)
 APP_NAME:=noterfy
 GIT_COMMIT:=$(shell git rev-parse --short HEAD)
 
-define DOCKER_DEPLOY_DEV_HELP_INFO
-# Use to deploy the development stage services to Docker Swarm
+define DOCKER_DEPLOY_ALPHA_HELP_INFO
+# Use to deploy the alpha stage services to Docker Swarm
 # mode.
 #
 # Make sure that the Docker in swarm mode already otherwise Docker
 # will throw an error.
 #
 # Example:
-#		make docker-deploy-dev
+#		make docker-deploy-alpha
 endef
-.PHONY: docker-deploy-dev
-docker-deploy-dev:
-	docker stack deploy -c ./build/noterfy/docker/dev/docker-stack.yml $(APP_NAME)
+.PHONY: docker-deploy-alpha
+docker-deploy-alpha:
+	@echo "👉 Building Noterfy Alpha Docker Image"
+	@cd ./build/noterfy/docker/alpha && docker-compose build
+	@docker stack deploy -c ./build/noterfy/docker/alpha/docker-stack.yml $(APP_NAME)
 
 define LOCAL_SERVER_HELP_INFO
 # Use to run noterfy server in local machine.
@@ -35,22 +35,11 @@ local-server: build-noterfy
 define START_DEV_SERVICES_HELP_INFO
 # Use to spin the development services
 # including the noterfy dependencies.
-# by default when the image is not yet exists
-# this will build the Docker image of the engine.
-# When you want to force build the image despite of
-# the image is already existing use:
-#      DOCKER_IMAGE_BUILD_FLAG=force
-#
 # Example:
 # 	make start-dev-services
-#   make start-dev-services DOCKER_IMAGE_BUILD_FLAG=force
 endef
 .PHONY: start-dev-services
 start-dev-services:
-ifeq ($(DOCKER_IMAGE_BUILD_FLAG), force)
-	@echo "👉 Forcing the Docker to build the image"
-	cd ./build/noterfy/docker/dev && docker-compose build
-endif
 	@echo "👉 Starting the services"
 	@cd ./build/noterfy/docker/dev && \
 	 	docker-compose up -d && \
@@ -91,7 +80,7 @@ ifdef NOTERFY_VERSION
 	@echo "👉 Noterfy Version: ${NOTERFY_VERSION}"
 endif
 ifeq ($(wildcard ./bin/.*),)
-	@echo "🛠 📂 Creating bin directory"
+	@echo "📂 Creating bin directory"
 	@mkdir ./bin
 endif
 	@echo "🛠 Building Noterfy"

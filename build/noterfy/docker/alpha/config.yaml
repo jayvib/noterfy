@@ -1,0 +1,3 @@
+store:
+  file:
+    path: /etc/noterfy/data

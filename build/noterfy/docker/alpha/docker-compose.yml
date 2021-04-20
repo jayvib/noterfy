@@ -1,0 +1,46 @@
+version: "3.5"
+
+# ⚠⚠⚠ This compose file is use for development purpose only.
+
+services:
+  noterfy-engine:
+    image: jayvib/noterfy:alpha
+    build:
+      context: ../../../../
+      dockerfile: build/noterfy/docker/Dockerfile
+      labels:
+        com.noterfy.description: "The applications backend engine"
+        com.noterfy.env: "alpha"
+      args:
+        NOTERFY_BUILD_COMMIT: alpha
+        NOTERFY_VERSION: alpha
+    ports:
+      - "50001:50001"
+    networks:
+      - noterfy-backend
+    volumes:
+      - type: volume
+        source: noterfy-volume
+        target: /etc/noterfy/data
+    secrets:
+      - source: noterfy-secret
+        target: config.yaml
+    env_file:
+      - ./noterfy.env
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:50001/health"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  noterfy-backend:
+
+volumes:
+  noterfy-volume:
+
+secrets:
+  noterfy-secret:
+    file: ./config.yaml
+
