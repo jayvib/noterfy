@@ -28,7 +28,7 @@ spec:
             claimName: noterfy-pv-local-claim
       containers:
         - name: noterfy-pod
-          image: jayvib/noterfy:0.2.1
+          image: jayvib/noterfy:latest
           ports:
             - containerPort: 50001
           volumeMounts:

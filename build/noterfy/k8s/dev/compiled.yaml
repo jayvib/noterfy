@@ -28,9 +28,49 @@ spec:
   - nodePort: 30001
     port: 50001
     protocol: TCP
+    targetPort: 50001
   selector:
     app: noterfy
   type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: noterfy
+  namespace: noterfy-dev
+spec:
+  minReadySeconds: 10
+  replicas: 1
+  selector:
+    matchLabels:
+      app: noterfy
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: noterfy
+    spec:
+      containers:
+      - image: jayvib/noterfy:latest
+        name: noterfy-pod
+        ports:
+        - containerPort: 50001
+        volumeMounts:
+        - mountPath: /etc/noterfy
+          name: volconf
+        - mountPath: /etc/noterfy/data
+          name: noterfy-pv-local
+      volumes:
+      - configMap:
+          name: noterfy-config
+        name: volconf
+      - name: noterfy-pv-local
+        persistentVolumeClaim:
+          claimName: noterfy-pv-local-claim
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -58,42 +98,3 @@ spec:
     requests:
       storage: 1Gi
   storageClassName: manual
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: noterfy
-  namespace: noterfy-dev
-spec:
-  minReadySeconds: 10
-  replicas: 1
-  selector:
-    matchLabels:
-      app: noterfy
-  strategy:
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 1
-    type: RollingUpdate
-  template:
-    metadata:
-      labels:
-        app: noterfy
-    spec:
-      containers:
-      - image: jayvib/noterfy:0.2.1
-        name: noterfy-pod
-        ports:
-        - containerPort: 50001
-        volumeMounts:
-        - mountPath: /etc/noterfy
-          name: volconf
-        - mountPath: /etc/noterfy/data
-          name: noterfy-pv-local
-      volumes:
-      - configMap:
-          name: noterfy-config
-        name: volconf
-      - name: noterfy-pv-local
-        persistentVolumeClaim:
-          claimName: noterfy-pv-local-claim

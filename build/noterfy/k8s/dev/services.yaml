@@ -9,6 +9,7 @@ spec:
   type: NodePort
   ports:
     - port: 50001
+      targetPort: 50001
       nodePort: 30001 # the port that will bind to host
       protocol: TCP
   selector:
