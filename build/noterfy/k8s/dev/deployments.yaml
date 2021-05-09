@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: noterfy
+  namespace: noterfy-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: noterfy
+  minReadySeconds: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: noterfy
+    spec:
+      volumes:
+        - name: volconf
+          configMap:
+            name: noterfy-config
+        - name: noterfy-pv-local
+          persistentVolumeClaim:
+            claimName: noterfy-pv-local-claim
+      containers:
+        - name: noterfy-pod
+          image: jayvib/noterfy:0.2.1
+          ports:
+            - containerPort: 50001
+          volumeMounts:
+            - mountPath: /etc/noterfy
+              name: volconf
+            - mountPath: /etc/noterfy/data
+              name: noterfy-pv-local

@@ -4,6 +4,7 @@ metadata:
   name: noterfy-svc
   labels:
     app: noterfy
+  namespace: noterfy-dev
 spec:
   type: NodePort
   ports:
