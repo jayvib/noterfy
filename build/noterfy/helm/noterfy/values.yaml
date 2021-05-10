@@ -6,7 +6,7 @@ images:
 
 storage:
   size: 10Gi
-  hostPath: "etc/noterfy"
+  hostPath: "/etc/noterfy"
   claim:
     size: 1Gi
 
