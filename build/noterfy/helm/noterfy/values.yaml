@@ -1,0 +1,15 @@
+appname: "noterfy"
+env: "dev"
+
+images:
+  noterfy: "jayvib/noterfy:latest"
+
+storage:
+  size: 10Gi
+  hostPath: "etc/noterfy"
+  claim:
+    size: 1Gi
+
+api:
+  targetPort: 50001
+  nodePort: 30001
