@@ -1,0 +1,5 @@
+store:
+  file:
+    path: /etc/noterfy/data
+server:
+  port: 50001

@@ -1,0 +1,100 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: noterfy-dev
+---
+apiVersion: v1
+data:
+  config.yaml: |
+    store:
+      file:
+        path: /etc/noterfy/data
+    server:
+      port: 50001
+kind: ConfigMap
+metadata:
+  name: noterfy-config
+  namespace: noterfy-dev
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: noterfy
+  name: noterfy-svc
+  namespace: noterfy-dev
+spec:
+  ports:
+  - nodePort: 30001
+    port: 50001
+    protocol: TCP
+    targetPort: 50001
+  selector:
+    app: noterfy
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: noterfy
+  namespace: noterfy-dev
+spec:
+  minReadySeconds: 10
+  replicas: 1
+  selector:
+    matchLabels:
+      app: noterfy
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: noterfy
+    spec:
+      containers:
+      - image: jayvib/noterfy:latest
+        name: noterfy-pod
+        ports:
+        - containerPort: 50001
+        volumeMounts:
+        - mountPath: /etc/noterfy
+          name: volconf
+        - mountPath: /etc/noterfy/data
+          name: noterfy-pv-local
+      volumes:
+      - configMap:
+          name: noterfy-config
+        name: volconf
+      - name: noterfy-pv-local
+        persistentVolumeClaim:
+          claimName: noterfy-pv-local-claim
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: noterfy-pv-local
+  namespace: noterfy-dev
+spec:
+  accessModes:
+  - ReadWriteMany
+  capacity:
+    storage: 10Gi
+  hostPath:
+    path: /etc/noterfy
+  storageClassName: manual
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: noterfy-pv-local-claim
+  namespace: noterfy-dev
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: manual

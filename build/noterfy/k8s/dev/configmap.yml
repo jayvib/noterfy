@@ -1,12 +1,12 @@
-# Note this is only for Development
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: noterfy-config
+  namespace: noterfy-dev
 data:
   config.yaml: |
     store:
       file:
-        path: .
+        path: /etc/noterfy/data
     server:
       port: 50001

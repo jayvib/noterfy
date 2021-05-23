@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.appname }}
+  namespace: {{ .Values.appname }}-{{ .Values.env }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.appname }}
+  minReadySeconds: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appname }}
+    spec:
+      volumes:
+        - name: volconf
+          configMap:
+            name: {{ .Values.appname }}-config
+        - name: {{ .Values.appname }}-pv-local
+          persistentVolumeClaim:
+            claimName: {{ .Values.appname }}-pv-local-claim
+      containers:
+        - name: {{ .Values.appname }}-pod
+          image: {{ .Values.images.noterfy }}
+          ports:
+            - containerPort: {{ .Values.api.targetPort }}
+          volumeMounts:
+            - mountPath: /etc/{{ .Values.appname }}
+              name: volconf
+            - mountPath: /etc/{{ .Values.appname }}/data
+              name: {{ .Values.appname }}-pv-local
